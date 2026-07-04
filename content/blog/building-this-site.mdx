@@ -1,0 +1,48 @@
+---
+title: "Building mhshakouri.dev"
+description: "Notes on building this site with Next.js 16, Tailwind v4, content-collections, and Claude Code."
+date: "2026-07-04"
+tags: ["nextjs", "meta"]
+draft: false
+---
+
+After 15+ years of building websites for other people, I finally built one for
+myself. This post documents the stack and a few decisions — partly as a
+hello-world for the blog, partly as a reference for future me.
+
+## The stack
+
+- **Next.js 16** (App Router) with React Server Components by default
+- **Tailwind CSS v4** with design tokens as CSS custom properties
+- **content-collections** for type-safe MDX content — this very post is a
+  validated document with a zod schema
+- **Cloudflare** for hosting (via OpenNext)
+
+## Type-safe content
+
+Every post is validated at build time. If I forget a `description` or typo a
+date, the build fails instead of shipping a broken page:
+
+```ts
+const posts = defineCollection({
+  name: "posts",
+  directory: "content/blog",
+  include: "**/*.mdx",
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.iso.date(),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+```
+
+That's the kind of guarantee I want from a side project I'll touch twice a
+year: the site should refuse to build before it ships something half-broken.
+
+## What's next
+
+Projects, talks, and a playground for interactive experiments. The full
+roadmap lives in the repo, and future posts will dig into the more
+interesting corners of it.

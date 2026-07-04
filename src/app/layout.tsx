@@ -16,11 +16,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
     default: `${site.name} — ${site.role}`,
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  openGraph: {
+    siteName: site.name,
+    type: "website",
+    url: site.url,
+  },
+  alternates: {
+    types: { "application/rss+xml": `${site.url}/feed.xml` },
+  },
 };
 
 /* Runs synchronously before first paint so the stored/system theme is applied

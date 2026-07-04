@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -54,4 +55,27 @@ body {
 ::selection {
   background: var(--accent);
   color: var(--accent-foreground);
+}
+
+/* Shiki dual-theme code blocks (rehype-pretty-code): the light values are
+   inlined; the dark values activate under .dark. */
+pre[data-theme*=" "],
+pre[data-theme*=" "] span,
+code[data-theme*=" "],
+code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+.dark pre[data-theme*=" "],
+.dark pre[data-theme*=" "] span,
+.dark code[data-theme*=" "],
+.dark code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+.prose pre {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
