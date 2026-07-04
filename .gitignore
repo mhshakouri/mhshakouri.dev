@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# source resume (private — web version lives in src/data/resume.ts)
+/mhshakouri-resume.pdf
+
 # debug
 npm-debug.log*
 yarn-debug.log*

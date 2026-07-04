@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-border border-t">
+    <footer className="border-border border-t print:hidden">
       <Container className="text-muted-foreground flex h-16 items-center justify-between text-sm">
         <p>
           © {new Date().getFullYear()} {site.name}

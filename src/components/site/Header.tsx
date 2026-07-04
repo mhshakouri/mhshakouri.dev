@@ -6,7 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   return (
-    <header className="border-border bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
+    <header className="border-border bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm print:hidden">
       <Container className="flex h-14 items-center justify-between">
         <Link href="/" className="font-semibold tracking-tight">
           {site.name}
