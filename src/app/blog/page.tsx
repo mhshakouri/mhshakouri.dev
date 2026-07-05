@@ -22,6 +22,11 @@ export default function BlogPage() {
             <article>
               <p className="text-muted-foreground font-mono text-xs">
                 {formatDate(post.date)} · {post.readingTime}
+                {post.draft && (
+                  <span className="border-accent text-accent ml-2 rounded-sm border px-1.5 py-0.5 uppercase">
+                    Draft
+                  </span>
+                )}
               </p>
               <h2 className="mt-2 text-xl font-medium">
                 <Link

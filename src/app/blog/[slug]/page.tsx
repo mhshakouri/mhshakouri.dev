@@ -50,6 +50,11 @@ export default async function PostPage({ params }: Props) {
         <header>
           <p className="text-muted-foreground font-mono text-xs">
             {formatDate(post.date)} · {post.readingTime}
+            {post.draft && (
+              <span className="border-accent text-accent ml-2 rounded-sm border px-1.5 py-0.5 uppercase">
+                Draft — dev only
+              </span>
+            )}
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
             {post.title}
