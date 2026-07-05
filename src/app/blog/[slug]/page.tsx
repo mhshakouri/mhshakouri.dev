@@ -14,6 +14,10 @@ function getPost(slug: string) {
   return publishedPosts.find((post) => post.slug === slug);
 }
 
+/* Only build-time slugs exist; unknown slugs must 404 rather than render at
+   request time — the MDX runtime can't run on Cloudflare Workers (no eval). */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return publishedPosts.map((post) => ({ slug: post.slug }));
 }

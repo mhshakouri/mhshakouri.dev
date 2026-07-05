@@ -63,8 +63,10 @@ export async function POST(request: Request) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.CONTACT_FROM_EMAIL ?? "onboarding@resend.dev",
-      to: process.env.CONTACT_TO_EMAIL ?? site.email,
+      /* `||` not `??`: .env templates ship these as empty strings, which
+         must fall through to the defaults. */
+      from: process.env.CONTACT_FROM_EMAIL || "onboarding@resend.dev",
+      to: process.env.CONTACT_TO_EMAIL || site.email,
       reply_to: email,
       subject: `mhshakouri.dev contact: ${name}`,
       text: `From: ${name} <${email}>\n\n${message}`,

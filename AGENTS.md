@@ -15,7 +15,7 @@ Full plan and milestones: see `docs/PLAN.md`.
 - Next.js 16 (App Router, `src/` dir, Turbopack) + TypeScript (strict, `noUncheckedIndexedAccess`)
 - Tailwind CSS v4 (CSS-first config in `src/app/globals.css`)
 - Content: MDX in `/content`, typed via content-collections (from M3)
-- Deploy target: Cloudflare via `@opennextjs/cloudflare` (M7)
+- Deploy: Cloudflare Workers via `@opennextjs/cloudflare` (wrangler.jsonc, open-next.config.ts)
 
 ## Commands
 
@@ -24,6 +24,16 @@ Full plan and milestones: see `docs/PLAN.md`.
 - `npm run lint` — ESLint
 - `npm run typecheck` — TypeScript check
 - `npm run format` — Prettier (with Tailwind class sorting)
+- `npm run preview:cf` — build + run on workerd locally (the real CF runtime)
+- `npm run deploy` — build + deploy to Cloudflare (needs `wrangler login`)
+
+## Cloudflare gotchas (learned in M7)
+
+- Workers forbids `eval`/`new Function`: MDX pages MUST be fully prerendered.
+  Keep `dynamicParams = false` on MDX routes and the static-assets incremental
+  cache in `open-next.config.ts`. A blog post rendering at request time will 500.
+- Secrets for production go in via `wrangler secret put` (e.g. RESEND_API_KEY),
+  not committed vars. Local workerd preview reads `.env.local` at build time.
 
 ## Conventions
 

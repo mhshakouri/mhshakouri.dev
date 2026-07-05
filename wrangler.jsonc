@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mhshakouri-dev",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Uncomment once the mhshakouri.dev zone lives in your Cloudflare account —
+  // deploy will then attach the domain automatically. Add a dashboard redirect
+  // rule for www → apex (Rules → Redirect Rules).
+  // "routes": [{ "pattern": "mhshakouri.dev", "custom_domain": true }],
+  "observability": {
+    "enabled": true
+  }
+
+  // No R2 incremental cache: the site is fully static apart from /api/contact
+  // (no ISR/revalidate anywhere). Prerendered pages ship as static assets.
+  // If ISR is ever added, see https://opennext.js.org/cloudflare/caching
+}
