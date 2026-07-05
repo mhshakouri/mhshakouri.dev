@@ -70,15 +70,20 @@ Each milestone is a small, reviewable chunk — commit at the end of each so the
 - Blog index + `[slug]` pages with MDX rendering, code syntax highlighting (Shiki), reading time
 - RSS feed, sitemap, `metadata` API for SEO/OpenGraph (+ dynamic OG images via `next/og` later if desired)
 
-### M4 — Projects & Talks/OSS
+### M4 — Projects & Talks/OSS (DEFERRED post-launch — decided 2026-07-05)
 
-- Projects index + detail pages (tech tags, links, screenshots)
+- Reframed as **case studies of professional work** (Bama TypeScript migration,
+  Tanincard fintech resilience, this website), not a repo-link portfolio grid.
+  Structure per entry: Problem → Approach → Outcome (with numbers).
+- Hidden from nav/sitemap until real content exists; content-collections
+  schemas are already in place from M3.
 - Talks/open-source section (can live on one page initially)
 
-### M5 — Playground
+### M5 — Playground (hands-on, post-launch)
 
 - `/playground` index; each demo is a self-contained client component route
 - Good candidates for the **hands-on** track — build demos yourself, use Claude for review
+- Uses page is also planned post-launch (guidelines session with Claude)
 
 ### M6 — Contact form
 

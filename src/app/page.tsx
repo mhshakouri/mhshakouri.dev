@@ -47,12 +47,12 @@ export default function HomePage() {
         >
           LinkedIn
         </a>
-        <a
-          href={`mailto:${site.email}`}
+        <Link
+          href="/contact"
           className="border-border hover:bg-muted rounded-md border px-4 py-2 text-sm font-medium transition-colors"
         >
           Get in touch
-        </a>
+        </Link>
       </div>
 
       <section className="mt-16">

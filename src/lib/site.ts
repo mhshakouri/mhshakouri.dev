@@ -9,11 +9,11 @@ export const site = {
   linkedin: "https://www.linkedin.com/in/mhshakouri",
   email: "mhshakouri@gmail.com",
   location: "Istanbul, Türkiye",
+  /* /projects and /uses return once they have real content (see docs/PLAN.md) */
   nav: [
     { href: "/", label: "Home" },
-    { href: "/projects", label: "Projects" },
     { href: "/blog", label: "Blog" },
     { href: "/resume", label: "Resume" },
-    { href: "/uses", label: "Uses" },
+    { href: "/contact", label: "Contact" },
   ],
 } as const;
