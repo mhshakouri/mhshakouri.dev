@@ -126,12 +126,18 @@ Clue zoom: render the full photo in a fixed viewport and use CSS transform (scal
 
 Photo handling: downscale client side before upload (canvas, longest edge 2000px, JPEG quality ~0.8). Validate clue legibility at this size early with a real photo, since zoom quality depends on it.
 
-## 9. Persian and RTL (unchanged, still the risk center)
+## 9. Script and direction (simplified after review, 2026-07-06)
 
-- Grid renders right to left. Data coordinates stay logical and direction-neutral; direction is applied in exactly one render layer.
-- Store exactly one grapheme per answer cell (use `Intl.Segmenter` to count graphemes; reject multi-grapheme input).
-- Persian mobile keyboards are the riskiest UX area of the whole project: use a hidden input to capture keystrokes, verify one keypress maps to one cell, and test ZWNJ and connected-form behavior on a real Android and iOS device early.
-- Advancing within a horizontal run moves leftward visually while increasing the logical column index. Test with a real puzzle in milestone A3, not at the end.
+Changed: RTL is a non-issue for v1, by design. The app has no concept of words: word boundaries and reading direction live in the photo and in the players' heads. Cells are absolutely positioned quads in image space, and CSS direction has no effect on absolutely positioned elements.
+
+- Coordinates are purely spatial: col 0 is the leftmost column in the image, always. Direction never renumbers the grid. (The original spec's "col 0 is the visual right edge" note is retired.)
+- No auto-advance in v1: tap a cell, type one letter. Without run detection the app cannot know if a cell belongs to a horizontal or vertical word anyway. Run detection plus direction-aware advance (leftward for horizontal Persian answers) is a v2 feature, and that is the only place direction will ever enter the code.
+- A single grapheme per cell renders in isolated letter form, which matches how printed Persian crosswords display letters. No bidi handling, no shaping logic.
+
+What survives, and neither item is about direction:
+
+- Grapheme discipline, still the risk center: one keypress maps to one cell. Use a hidden input to capture keystrokes, `Intl.Segmenter` to enforce single graphemes, and test ZWNJ and connected-form behavior on real Android and iOS Persian keyboards early.
+- Font coverage: the site's Geist fonts have no Arabic-script glyphs. Use a system fallback stack for answer letters in v1; adopt Vazirmatn later only if the fallback renders poorly.
 
 ## 10. Setup flow (unchanged in spirit)
 
@@ -149,7 +155,7 @@ Acceptance: photo to saved, tagged, aligned puzzle entirely by hand, then a work
 
 Route: `/playground/arrowword/s/[id]`.
 
-1. Connect WebSocket, receive `state`, render grid over photo, RTL, responsive.
+1. Connect WebSocket, receive `state`, render grid over photo, responsive.
 2. Dead inert; clue zooms; answer selects and types (set/clear over WS with optimistic echo); prefilled locked.
 3. Apply incoming `cell` messages. Show a subtle peer indicator from `peers`.
 
@@ -160,7 +166,7 @@ Acceptance: two devices on the same link fill cells and see each other's letters
 - A0 Worker skeleton: DO + R2 + all endpoints, deployed; `/playground` index page and arrowword landing exist. Acceptance: curl can create a session, upload a photo, set a puzzle, and two websocat clients see each other's set messages.
 - A1 Photo and alignment UI: upload, downscale, rows/cols, corner drag, overlay. Acceptance: overlay lines match a real printed grid.
 - A2 Tagging and save: tap to tag, prefilled letters, save, share link. Acceptance: a fully tagged puzzle persists and reloads via its link.
-- A3 Play rendering: RTL grid over photo, four cell types visually distinct, clue zoom. Acceptance: looks right on phone and desktop, clues readable.
+- A3 Play rendering: grid over photo, four cell types visually distinct, clue zoom, Persian letters render correctly in cells. Acceptance: looks right on phone and desktop, clues readable.
 - A4 Sync: typing syncs both ways with reconnect handling. Acceptance: the two-device test passes.
 - A5 Polish: Persian keyboard hardening, loading/empty/error states, peer indicator, copy-link UX.
 
