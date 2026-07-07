@@ -16,6 +16,11 @@ and format:check on PRs and main. Build must run first — it generates
 Note: Prettier must never format MDX (`*.mdx` is in .prettierignore) — its
 markdown parser corrupts JSX comments.
 
+CD: Cloudflare Workers Builds (dashboard git integration) builds and deploys
+every push to main — pushing to main IS publishing. The CI workflow holds no
+Cloudflare credentials by design; `npm run deploy` remains as manual fallback.
+Draft posts (`draft: true`) are safe on main: excluded from prod builds.
+
 ## Stack
 
 - Next.js 16 (App Router, `src/` dir, Turbopack) + TypeScript (strict, `noUncheckedIndexedAccess`)
