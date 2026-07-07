@@ -8,7 +8,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # mhshakouri.dev
 
 Personal website of Hossein Shakouri (senior frontend/software engineer).
-Full plan and milestones: see `docs/PLAN.md`.
+Live at https://mhshakouri.dev. Full plan and milestones: see `docs/PLAN.md`.
+
+CI: GitHub Actions (`.github/workflows/ci.yml`) runs build, lint, typecheck,
+and format:check on PRs and main. Build must run first — it generates
+`.content-collections/`, which the tsconfig alias needs for typecheck.
+Note: Prettier must never format MDX (`*.mdx` is in .prettierignore) — its
+markdown parser corrupts JSX comments.
 
 ## Stack
 
