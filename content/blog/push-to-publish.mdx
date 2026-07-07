@@ -1,9 +1,9 @@
 ---
 title: "Push to publish: CD with Workers Builds, CI with GitHub Actions"
-description: "How publishing works on a fully prerendered Next.js site deployed to Cloudflare Workers — and the plan for closing the CI gap."
-date: "2026-07-05"
+description: "How publishing works on a fully prerendered Next.js site deployed to Cloudflare Workers — and how the CI gap got closed."
+date: "2026-07-07"
 tags: ["cloudflare", "deployment", "meta"]
-draft: true
+draft: false
 ---
 
 This site is fully prerendered. Every page — including the post you're
@@ -13,8 +13,8 @@ consequence that's easy to forget: **publishing anything means deploying
 the site**. There is no CMS, no "save post" button. A new blog post is a
 git commit, and a git commit does nothing for readers until a build ships.
 
-This post documents how that pipeline works, the CD setup I'm putting in
-place, and the CI gap I'm deliberately leaving open for now — partly as a
+This post documents how that pipeline works, the CD setup that now
+publishes this site, and the CI gate in front of it — partly as a
 reference for future me, partly because deployment posts helped me more
 than framework posts when I was setting this up.
 
@@ -55,11 +55,11 @@ npm run deploy                          # every publish (for now)
 
 ## The drift problem
 
-Manual deploys have a failure mode I know too well from client work:
-`main` and production quietly stop being the same thing. You push a fix,
-forget to deploy, and three days later debug a "bug" that was fixed on
-Tuesday. On a team, process covers for this. On a personal site, future
-me *is* the process, and I don't trust him.
+Manual deploys have a well-known failure mode: `main` and production
+quietly stop being the same thing. A fix gets pushed but never deployed,
+and days later someone is debugging a bug that was already fixed. On a
+team, process covers for this. On a personal site, future me *is* the
+process, and I don't trust him.
 
 So the rule I want: **the repo is the site**. If it's on `main`, it's
 live. Publishing a post should be `git push`, nothing else.
@@ -77,6 +77,14 @@ Every push to `main` builds and deploys automatically. Pushes to any
 other branch get a **preview URL** — which quietly solves a problem I
 didn't know I had: a draft blog post on a PR branch becomes a private,
 shareable staging link before it's public.
+
+One real-world gotcha from setting this up: the dashboard auto-detects
+`npm run build` and `npx wrangler deploy` as defaults, and my first build
+failed with *"Could not find compiled Open Next config"*. Plain
+`next build` produces `.next/`, but nothing compiles the OpenNext worker
+bundle that deploy uploads. With OpenNext, both commands must be set
+explicitly to the ones above — the defaults get you a green Next.js build
+and a dead-on-arrival deploy.
 
 One subtlety worth writing down: environment variables. Locally, the
 contact form's Resend key lives in `.env.local`, which is gitignored — so
@@ -96,27 +104,45 @@ test I haven't written yet. It's continuous *delivery* with no continuous
 committing, that's survivable — but "out of habit" is exactly the kind of
 process that erodes.
 
-The plan is to add the missing gate with GitHub Actions, kept deliberately
+The missing gate is a GitHub Actions workflow, kept deliberately
 boring — checks only, no deploying:
 
 ```yaml
-# .github/workflows/ci.yml (planned)
+# .github/workflows/ci.yml
+name: CI
+
 on:
   pull_request:
   push:
     branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
       - run: npm ci
+      # Build first: it generates .content-collections/, which the
+      # tsconfig alias needs for typecheck to resolve.
+      - run: npm run build
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm run build
+      - run: npm run format:check
 ```
+
+Its very first run caught a real bug: typecheck failed in CI while
+passing locally, because the generated content-collections types only
+exist after a build has run. My machine had them lying around from dev
+sessions; a fresh checkout did not — hence the build-first ordering in
+the workflow. One run old, and the gate had already earned its keep.
 
 The division of labor matters to me: **GitHub Actions is the quality
 gate, Workers Builds is the delivery mechanism.** Actions never touches
@@ -128,9 +154,11 @@ it, because nothing untested can reach it.
 
 ## Where this lands
 
-Publishing a post, once this is wired up: write the MDX, open a PR, check
-the preview URL, merge. Live in about two minutes, with lint and types
-verified on the way. No wrangler, no checklist, no relying on my own
-discipline at 1am.
+Publishing a post now: write the MDX, open a PR, check the preview URL,
+merge. Live in about two minutes, with lint and types verified on the
+way. No wrangler, no checklist, no relying on my own discipline at 1am.
+
+This very post is the proof: it went live by flipping `draft: false` in
+a commit and pushing it.
 
 The repo is the site. That's the whole pipeline.

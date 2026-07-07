@@ -32,6 +32,7 @@ const posts = defineCollection({
     date: z.iso.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    content: z.string(),
   }),
   transform: async (document, context) => {
     const body = await compileMDX(context, document, mdxOptions);
@@ -56,6 +57,7 @@ const projects = defineCollection({
     repo: z.string().url().optional(),
     live: z.string().url().optional(),
     featured: z.boolean().default(false),
+    content: z.string(),
   }),
   transform: async (document, context) => {
     const body = await compileMDX(context, document, mdxOptions);
@@ -72,6 +74,7 @@ const talks = defineCollection({
     event: z.string(),
     date: z.iso.date(),
     url: z.string().url().optional(),
+    content: z.string(),
   }),
   transform: async (document, context) => {
     const body = await compileMDX(context, document, mdxOptions);
