@@ -1,4 +1,11 @@
 .next
+.open-next
+.wrangler
+.content-collections
 node_modules
 package-lock.json
 public
+
+# Prettier's markdown parser mangles MDX JSX comments ({/* */} becomes
+# invalid {/_ _/}). Content prose is authored by hand; don't reformat it.
+*.mdx

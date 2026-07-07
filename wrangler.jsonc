@@ -6,15 +6,15 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
   },
   // Uncomment once the mhshakouri.dev zone lives in your Cloudflare account —
   // deploy will then attach the domain automatically. Add a dashboard redirect
   // rule for www → apex (Rules → Redirect Rules).
   // "routes": [{ "pattern": "mhshakouri.dev", "custom_domain": true }],
   "observability": {
-    "enabled": true
-  }
+    "enabled": true,
+  },
 
   // No R2 incremental cache: the site is fully static apart from /api/contact
   // (no ISR/revalidate anywhere). Prerendered pages ship as static assets.
