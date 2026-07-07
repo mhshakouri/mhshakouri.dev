@@ -1,0 +1,136 @@
+---
+title: "Push to publish: CD with Workers Builds, CI with GitHub Actions"
+description: "How publishing works on a fully prerendered Next.js site deployed to Cloudflare Workers — and the plan for closing the CI gap."
+date: "2026-07-05"
+tags: ["cloudflare", "deployment", "meta"]
+draft: true
+---
+
+This site is fully prerendered. Every page — including the post you're
+reading — is HTML baked at build time. That's great for speed and it's
+required by the runtime (more on that below), but it comes with a
+consequence that's easy to forget: **publishing anything means deploying
+the site**. There is no CMS, no "save post" button. A new blog post is a
+git commit, and a git commit does nothing for readers until a build ships.
+
+This post documents how that pipeline works, the CD setup I'm putting in
+place, and the CI gap I'm deliberately leaving open for now — partly as a
+reference for future me, partly because deployment posts helped me more
+than framework posts when I was setting this up.
+
+## What a deploy actually does
+
+The site is Next.js 16 running on Cloudflare Workers via
+[OpenNext](https://opennext.js.org/cloudflare). A deploy is two commands,
+wrapped in one npm script:
+
+```bash
+npm run deploy
+# = opennextjs-cloudflare build && opennextjs-cloudflare deploy
+```
+
+The build step runs `next build`, then adapts the output for the Workers
+runtime: server code becomes a single `worker.js`, prerendered pages and
+static files become Workers static assets, and the prerender cache is
+copied into the asset bundle so pages are served straight from the edge
+without ever re-rendering.
+
+That "without ever re-rendering" is not an optimization — it's a hard
+requirement. Workers forbids `eval` and `new Function`, and the MDX
+runtime needs exactly that to hydrate a compiled post. The first time I
+ran this site on the real runtime, every blog post returned a 500 while
+the same build worked fine under `next start`. The fix was to make
+prerendering airtight: `dynamicParams = false` on the blog route, and
+OpenNext's static-assets incremental cache so known slugs are served from
+the build output and unknown slugs 404 instead of attempting a render
+that cannot succeed.
+
+Day to day, wrangler only ever shows up three times:
+
+```bash
+npx wrangler login                      # once per machine
+npx wrangler secret put RESEND_API_KEY  # once — lives in Cloudflare
+npm run deploy                          # every publish (for now)
+```
+
+## The drift problem
+
+Manual deploys have a failure mode I know too well from client work:
+`main` and production quietly stop being the same thing. You push a fix,
+forget to deploy, and three days later debug a "bug" that was fixed on
+Tuesday. On a team, process covers for this. On a personal site, future
+me *is* the process, and I don't trust him.
+
+So the rule I want: **the repo is the site**. If it's on `main`, it's
+live. Publishing a post should be `git push`, nothing else.
+
+## CD: Cloudflare Workers Builds
+
+Cloudflare's git integration (Workers Builds) does exactly this, and the
+setup is five minutes in the dashboard — connect the GitHub repo, then:
+
+- **Build command:** `npx opennextjs-cloudflare build`
+- **Deploy command:** `npx opennextjs-cloudflare deploy`
+- **Production branch:** `main`
+
+Every push to `main` builds and deploys automatically. Pushes to any
+other branch get a **preview URL** — which quietly solves a problem I
+didn't know I had: a draft blog post on a PR branch becomes a private,
+shareable staging link before it's public.
+
+One subtlety worth writing down: environment variables. Locally, the
+contact form's Resend key lives in `.env.local`, which is gitignored — so
+CI builds never see it, and that's correct. In production the key comes
+from a Cloudflare secret (`wrangler secret put`), injected at runtime.
+The build doesn't need the secret at all; only the running worker does.
+Keeping those two channels separate means the key exists in exactly two
+places: my machine and Cloudflare. Never in git, never in CI logs.
+
+## The gap: CD without CI
+
+Here's the trade-off I'm consciously making. Workers Builds will happily
+build and deploy a commit that fails lint, fails typecheck, or breaks a
+test I haven't written yet. It's continuous *delivery* with no continuous
+*integration* in front of it. For a solo project where I run
+`npm run lint && npm run typecheck && npm run build` out of habit before
+committing, that's survivable — but "out of habit" is exactly the kind of
+process that erodes.
+
+The plan is to add the missing gate with GitHub Actions, kept deliberately
+boring — checks only, no deploying:
+
+```yaml
+# .github/workflows/ci.yml (planned)
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+```
+
+The division of labor matters to me: **GitHub Actions is the quality
+gate, Workers Builds is the delivery mechanism.** Actions never touches
+Cloudflare credentials; Cloudflare never runs my checks. Each side does
+one thing, and neither holds secrets it doesn't need. With branch
+protection requiring the checks to pass before merge, `main` stays
+deployable by construction — and Workers Builds can keep blindly trusting
+it, because nothing untested can reach it.
+
+## Where this lands
+
+Publishing a post, once this is wired up: write the MDX, open a PR, check
+the preview URL, merge. Live in about two minutes, with lint and types
+verified on the way. No wrangler, no checklist, no relying on my own
+discipline at 1am.
+
+The repo is the site. That's the whole pipeline.
