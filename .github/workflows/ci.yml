@@ -19,7 +19,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Build first: it generates .content-collections/, which the
+      # content-collections tsconfig alias needs for typecheck to resolve.
+      - run: npm run build
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
-      - run: npm run build
