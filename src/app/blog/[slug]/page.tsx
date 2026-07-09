@@ -16,7 +16,7 @@ function getPost(slug: string) {
 }
 
 /* Only build-time slugs exist; unknown slugs must 404 rather than render at
-   request time — the MDX runtime can't run on Cloudflare Workers (no eval). */
+   request time - the MDX runtime can't run on Cloudflare Workers (no eval). */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -67,7 +67,7 @@ export default async function PostPage({ params }: Props) {
             {formatDate(post.date)} · {post.readingTime}
             {post.draft && (
               <span className="border-accent text-accent ml-2 rounded-sm border px-1.5 py-0.5 uppercase">
-                Draft — dev only
+                Draft (dev only)
               </span>
             )}
           </p>

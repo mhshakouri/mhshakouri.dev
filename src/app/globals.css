@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Design tokens — single source of truth for color.
+/* Design tokens - single source of truth for color.
    Components must use the mapped Tailwind classes (bg-background, text-accent…),
    never raw hex values. */
 :root {

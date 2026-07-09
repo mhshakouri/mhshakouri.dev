@@ -4,7 +4,7 @@ export const site = {
   role: "Senior Frontend Engineer",
   url: "https://mhshakouri.dev",
   description:
-    "Personal website of Hossein Shakouri — senior frontend engineer with 15+ years building for the web. Projects, writing, and experiments.",
+    "Personal website of Hossein Shakouri, senior frontend engineer with 15+ years building for the web. Projects, writing, and experiments.",
   github: "https://github.com/mhshakouri",
   linkedin: "https://www.linkedin.com/in/mhshakouri",
   email: "mhshakouri@gmail.com",

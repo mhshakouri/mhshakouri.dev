@@ -1,21 +1,21 @@
 ---
 title: "Push to publish: CD with Workers Builds, CI with GitHub Actions"
-description: "How publishing works on a fully prerendered Next.js site deployed to Cloudflare Workers — and how the CI gap got closed."
+description: "How publishing works on a fully prerendered Next.js site deployed to Cloudflare Workers, and how the CI gap got closed."
 date: "2026-07-07"
 tags: ["cloudflare", "deployment", "meta"]
 image: "/blog/push-to-publish.png"
 draft: false
 ---
 
-This site is fully prerendered. Every page — including the post you're
-reading — is HTML baked at build time. That's great for speed and it's
+This site is fully prerendered. Every page, including the post you're
+reading, is HTML baked at build time. That's great for speed and it's
 required by the runtime (more on that below), but it comes with a
 consequence that's easy to forget: **publishing anything means deploying
 the site**. There is no CMS, no "save post" button. A new blog post is a
 git commit, and a git commit does nothing for readers until a build ships.
 
 This post documents how that pipeline works, the CD setup that now
-publishes this site, and the CI gate in front of it — partly as a
+publishes this site, and the CI gate in front of it: partly as a
 reference for future me, partly because deployment posts helped me more
 than framework posts when I was setting this up.
 
@@ -36,7 +36,7 @@ static files become Workers static assets, and the prerender cache is
 copied into the asset bundle so pages are served straight from the edge
 without ever re-rendering.
 
-That "without ever re-rendering" is not an optimization — it's a hard
+That "without ever re-rendering" is not an optimization; it's a hard
 requirement. Workers forbids `eval` and `new Function`, and the MDX
 runtime needs exactly that to hydrate a compiled post. The first time I
 ran this site on the real runtime, every blog post returned a 500 while
@@ -50,7 +50,7 @@ Day to day, wrangler only ever shows up three times:
 
 ```bash
 npx wrangler login                      # once per machine
-npx wrangler secret put RESEND_API_KEY  # once — lives in Cloudflare
+npx wrangler secret put RESEND_API_KEY  # once, lives in Cloudflare
 npm run deploy                          # every publish (for now)
 ```
 
@@ -68,14 +68,14 @@ live. Publishing a post should be `git push`, nothing else.
 ## CD: Cloudflare Workers Builds
 
 Cloudflare's git integration (Workers Builds) does exactly this, and the
-setup is five minutes in the dashboard — connect the GitHub repo, then:
+setup is five minutes in the dashboard. Connect the GitHub repo, then set:
 
 - **Build command:** `npx opennextjs-cloudflare build`
 - **Deploy command:** `npx opennextjs-cloudflare deploy`
 - **Production branch:** `main`
 
 Every push to `main` builds and deploys automatically. Pushes to any
-other branch get a **preview URL** — which quietly solves a problem I
+other branch get a **preview URL**, which quietly solves a problem I
 didn't know I had: a draft blog post on a PR branch becomes a private,
 shareable staging link before it's public.
 
@@ -84,11 +84,11 @@ One real-world gotcha from setting this up: the dashboard auto-detects
 failed with *"Could not find compiled Open Next config"*. Plain
 `next build` produces `.next/`, but nothing compiles the OpenNext worker
 bundle that deploy uploads. With OpenNext, both commands must be set
-explicitly to the ones above — the defaults get you a green Next.js build
+explicitly to the ones above; the defaults get you a green Next.js build
 and a dead-on-arrival deploy.
 
 One subtlety worth writing down: environment variables. Locally, the
-contact form's Resend key lives in `.env.local`, which is gitignored — so
+contact form's Resend key lives in `.env.local`, which is gitignored, so
 CI builds never see it, and that's correct. In production the key comes
 from a Cloudflare secret (`wrangler secret put`), injected at runtime.
 The build doesn't need the secret at all; only the running worker does.
@@ -102,11 +102,11 @@ build and deploy a commit that fails lint, fails typecheck, or breaks a
 test I haven't written yet. It's continuous *delivery* with no continuous
 *integration* in front of it. For a solo project where I run
 `npm run lint && npm run typecheck && npm run build` out of habit before
-committing, that's survivable — but "out of habit" is exactly the kind of
+committing, that's survivable. But "out of habit" is exactly the kind of
 process that erodes.
 
 The missing gate is a GitHub Actions workflow, kept deliberately
-boring — checks only, no deploying:
+boring: checks only, no deploying.
 
 ```yaml
 # .github/workflows/ci.yml
@@ -142,7 +142,7 @@ jobs:
 Its very first run caught a real bug: typecheck failed in CI while
 passing locally, because the generated content-collections types only
 exist after a build has run. My machine had them lying around from dev
-sessions; a fresh checkout did not — hence the build-first ordering in
+sessions; a fresh checkout did not, hence the build-first ordering in
 the workflow. One run old, and the gate had already earned its keep.
 
 The division of labor matters to me: **GitHub Actions is the quality
@@ -150,7 +150,7 @@ gate, Workers Builds is the delivery mechanism.** Actions never touches
 Cloudflare credentials; Cloudflare never runs my checks. Each side does
 one thing, and neither holds secrets it doesn't need. With branch
 protection requiring the checks to pass before merge, `main` stays
-deployable by construction — and Workers Builds can keep blindly trusting
+deployable by construction, and Workers Builds can keep blindly trusting
 it, because nothing untested can reach it.
 
 ## Where this lands

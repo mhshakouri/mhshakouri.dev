@@ -1,7 +1,7 @@
 "use client";
 
 /* Icon visibility is CSS-driven (dark: variant) rather than state-driven,
-   so this renders identically on server and client — no hydration mismatch. */
+   so this renders identically on server and client - no hydration mismatch. */
 export function ThemeToggle() {
   function toggle() {
     const dark = document.documentElement.classList.toggle("dark");

@@ -21,8 +21,8 @@ export default function HomePage() {
       </h1>
       <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-relaxed">
         A front-end developer at heart, with 15+ years building fast,
-        accessible, maintainable interfaces — and crossing into the backend
-        whenever it helps the product ship.
+        accessible, maintainable interfaces, crossing into the backend whenever
+        it helps the product ship.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
@@ -61,7 +61,7 @@ export default function HomePage() {
         </h2>
         <div className="text-muted-foreground mt-4 max-w-xl space-y-4 leading-relaxed">
           <p>
-            I&apos;ve spent the last decade and a half shipping for the web —
+            I&apos;ve spent the last decade and a half shipping for the web:
             from high-traffic platforms like Bama.ir, one of Iran&apos;s busiest
             automotive marketplaces, to fintech systems that kept running
             through nationwide network disruptions. I&apos;ve worked solo, led

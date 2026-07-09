@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Resume",
-  description: `Resume of ${resume.name} — ${resume.role}.`,
+  description: `Resume of ${resume.name}, ${resume.role}.`,
 };
 
 function Section({
@@ -118,7 +118,7 @@ export default function ResumePage() {
               <span className="font-medium">{entry.degree}</span>
               <span className="text-muted-foreground">
                 {" "}
-                — {entry.school}, {entry.year}
+                · {entry.school}, {entry.year}
               </span>
             </li>
           ))}

@@ -1,5 +1,5 @@
 /* Web version of the resume. Curated from the source PDF (git-ignored at the
-   repo root) — deliberately excludes phone number and visa details. */
+   repo root) - deliberately excludes phone number and visa details. */
 
 export type SkillGroup = {
   category: string;

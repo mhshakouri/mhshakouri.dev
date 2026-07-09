@@ -8,9 +8,9 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS",
   },
-  // Uncomment once the mhshakouri.dev zone lives in your Cloudflare account —
+  // Uncomment once the mhshakouri.dev zone lives in your Cloudflare account;
   // deploy will then attach the domain automatically. Add a dashboard redirect
-  // rule for www → apex (Rules → Redirect Rules).
+  // rule for www to apex (Rules, then Redirect Rules).
   // "routes": [{ "pattern": "mhshakouri.dev", "custom_domain": true }],
   "observability": {
     "enabled": true,

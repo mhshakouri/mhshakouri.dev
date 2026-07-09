@@ -11,7 +11,7 @@ const contactSchema = z.object({
 });
 
 /* Best-effort rate limit. On Cloudflare Workers this map is per-isolate, so
-   it's a speed bump rather than a guarantee — the honeypot does the real work. */
+   it's a speed bump rather than a guarantee - the honeypot does the real work. */
 const lastSubmission = new Map<string, number>();
 const RATE_LIMIT_MS = 30_000;
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   const { name, email, message, company } = parsed.data;
 
-  /* Bots that filled the honeypot get a fake success — no signal to adapt to. */
+  /* Bots that filled the honeypot get a fake success - no signal to adapt to. */
   if (company) {
     return Response.json({ ok: true });
   }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.error("RESEND_API_KEY is not set — contact form is disabled");
+    console.error("RESEND_API_KEY is not set - contact form is disabled");
     return Response.json(
       { error: "The contact form is not available right now." },
       { status: 503 },

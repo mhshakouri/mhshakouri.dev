@@ -13,7 +13,7 @@ const mdxOptions: Options = {
       {
         // NB: this version of rehype-pretty-code calls the option `theme`
         // (singular) even for the multi-theme record form. The compiled MDX
-        // is cached on content only — clear .content-collections/ after
+        // is cached on content only - clear .content-collections/ after
         // changing plugin options here.
         theme: { light: "github-light", dark: "github-dark" },
         defaultLang: "plaintext",

@@ -36,7 +36,7 @@ export function ContactForm() {
   if (status === "sent") {
     return (
       <p className="border-border bg-muted rounded-md border p-4 text-sm">
-        Thanks — your message is on its way. I&apos;ll get back to you soon.
+        Thanks, your message is on its way. I&apos;ll get back to you soon.
       </p>
     );
   }
@@ -78,7 +78,7 @@ export function ContactForm() {
           className="border-border bg-background focus:border-accent mt-1 w-full rounded-md border px-3 py-2 text-sm outline-none"
         />
       </label>
-      {/* Honeypot — hidden from real users, tempting for bots. */}
+      {/* Honeypot - hidden from real users, tempting for bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px]">
         <label>
           Company

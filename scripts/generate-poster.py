@@ -1,4 +1,4 @@
-"""Terminal Cartography — blog header / OG image generator.
+"""Terminal Cartography - blog header / OG image generator.
 
 One fig per post, same visual system: near-black field, GeistMono
 instrumentation, a single emerald signal, faint registry marks.
@@ -7,7 +7,7 @@ Usage:
   python3 scripts/generate-poster.py <slug> [<slug> ...]
   python3 scripts/generate-poster.py --all
 
-Output: public/blog/<slug>.png  (2400x1260, ~1.9:1 — page header and OG card)
+Output: public/blog/<slug>.png  (2400x1260, ~1.9:1 - page header and OG card)
 
 Requires: pip3 install pillow
 Adding a new post's poster: write a draw_<name>(ctx) function and register
@@ -94,7 +94,7 @@ class Ctx:
         for cx, cy in [(120, 110), (2280, 110), (120, 1150), (2280, 1150)]:
             self.line((cx - 14, cy), (cx + 14, cy), fill=FAINT, width=1)
             self.line((cx, cy - 14), (cx, cy + 14), fill=FAINT, width=1)
-        self.text((170, 98), f"fig. {fig} — {caption}", self.mono(26), FAINT)
+        self.text((170, 98), f"fig. {fig} · {caption}", self.mono(26), FAINT)
         self.text((2230, 98), "41.0082 N  28.9784 E", self.mono(26), FAINT, anchor="ra")
         self.text((2230, 1138), "mhshakouri.dev", self.mono(28), MUTED, anchor="rm")
 
