@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { formatDate } from "@/lib/format";
@@ -20,6 +21,20 @@ export default function BlogPage() {
         {publishedPosts.map((post) => (
           <li key={post.slug}>
             <article>
+              {post.image && (
+                <Link href={`/blog/${post.slug}`} tabIndex={-1}>
+                  {/* unoptimized: static asset served from the CF edge; the
+                      worker has no image-optimization binding */}
+                  <Image
+                    src={post.image}
+                    alt=""
+                    width={2400}
+                    height={1260}
+                    unoptimized
+                    className="border-border mb-5 rounded-lg border"
+                  />
+                </Link>
+              )}
               <p className="text-muted-foreground font-mono text-xs">
                 {formatDate(post.date)} · {post.readingTime}
                 {post.draft && (

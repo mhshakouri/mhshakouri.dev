@@ -1,5 +1,6 @@
 import { MDXContent } from "@content-collections/mdx/react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
 import { formatDate } from "@/lib/format";
@@ -35,6 +36,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "article",
       publishedTime: post.date,
       url: `${site.url}/blog/${post.slug}`,
+      images: post.image
+        ? [{ url: post.image, width: 2400, height: 1260 }]
+        : undefined,
     },
   };
 }
@@ -48,6 +52,17 @@ export default async function PostPage({ params }: Props) {
     <Container className="py-16">
       <article>
         <header>
+          {post.image && (
+            <Image
+              src={post.image}
+              alt=""
+              width={2400}
+              height={1260}
+              priority
+              unoptimized
+              className="border-border mb-8 rounded-lg border"
+            />
+          )}
           <p className="text-muted-foreground font-mono text-xs">
             {formatDate(post.date)} · {post.readingTime}
             {post.draft && (

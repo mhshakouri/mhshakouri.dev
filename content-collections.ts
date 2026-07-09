@@ -32,6 +32,9 @@ const posts = defineCollection({
     date: z.iso.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    /* header/OG image under public/, e.g. "/blog/<slug>.png".
+       Generate with: python3 scripts/generate-poster.py <slug> */
+    image: z.string().optional(),
     content: z.string(),
   }),
   transform: async (document, context) => {
