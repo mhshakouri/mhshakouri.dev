@@ -39,7 +39,7 @@ export const resume = {
   location: "Istanbul, Türkiye",
   relocation: "Open to relocation and remote",
   summary:
-    "Front-end engineer with 15+ years shipping production web systems: large-scale Vue/Nuxt and React/Next.js applications in TypeScript, built for performance, accessibility, and scale at Iran's leading vehicle marketplace, plus payment interfaces for a live fintech platform. Comfortable across backend, APIs, databases, and deployment when it helps the product ship. I now work AI-first: coding agents are my primary development interface, and I own the specs, the architecture, and the review. I introduced and ran the first spec-driven AI development framework at my company, and have shipped production software in languages I do not write by hand. I ship, then iterate.",
+    "Front-end engineer with 15+ years shipping production web systems: large-scale Vue/Nuxt and React/Next.js applications in TypeScript, built for performance, accessibility, and scale at Iran's leading vehicle marketplace, plus payment interfaces for a live fintech platform. Comfortable across backend, APIs, databases, and deployment when it helps the product ship. I now work AI-first: coding agents are my primary development interface, and I own the specs, the architecture, and the review. I introduced and ran the first spec-driven AI development framework at my company. I ship, then iterate.",
   practice: [
     {
       label: "Spec-driven development",
@@ -52,10 +52,6 @@ export const resume = {
     {
       label: "Proven in production, not just side projects",
       body: "Built payment interfaces and flows for a live fintech platform AI-first, where correctness and reliability were not optional.",
-    },
-    {
-      label: "Shipping in unfamiliar languages",
-      body: "Delivered a production Python application without hand-writing Python, by directing AI and owning the architecture, testing, and debugging.",
     },
   ] satisfies Practice[],
   projects: [
@@ -76,15 +72,6 @@ export const resume = {
         "Caddy",
         "Claude Code",
       ],
-    },
-    {
-      name: "Bank Transfer Automation Tool",
-      status: "shipped, Python",
-      highlights: [
-        "Reverse-engineered a bank's batch-transfer flow and shipped a working desktop tool for a client when the official application failed.",
-        "Written entirely through AI direction: I owned the problem definition, architecture, and verification, and did not hand-write the Python.",
-      ],
-      stack: ["Python", "AI-assisted development"],
     },
     {
       name: "Multiplayer Arrowword App",
