@@ -59,6 +59,10 @@ Draft posts (`draft: true`) are safe on main: excluded from prod builds.
   `python3 scripts/generate-poster.py <slug>` (needs `pip3 install pillow`),
   committed under `public/blog/`, referenced via the `image` frontmatter field.
   One fig number per post; add a draw function in the script for new posts.
+- LinkedIn variant: `... <slug> --social` renders 4:5 portrait (title above the
+  same fig) into `assets/social/`, which is outside `public/` so it is never
+  served. Needs a SOCIAL entry with title lines and a hook. Prefer 4:5 for the
+  feed; the 1.9:1 header is the og:image.
 - Small, focused commits per feature/milestone.
 
 ## Working with Hossein

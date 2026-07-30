@@ -22,6 +22,8 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = Path(__file__).resolve().parent.parent
 FONTS = Path(__file__).resolve().parent / "poster-fonts"
 OUT_DIR = ROOT / "public" / "blog"
+# 4:5 social variants are not served by the site, so they stay out of public/.
+SOCIAL_DIR = ROOT / "assets" / "social"
 
 S = 2  # supersample factor
 W, H = 2400 * S, 1260 * S
@@ -38,10 +40,17 @@ ACCENT_DIM = (24, 90, 66)
 
 
 class Ctx:
-    """Drawing context with base-coordinate helpers (all coords in 2400x1260 space)."""
+    """Drawing context in base coordinates (2400 wide, `height` tall).
 
-    def __init__(self):
-        self.img = Image.new("RGB", (W, H), BG)
+    `dy` shifts every subsequent drawing call down, which is how the portrait
+    social variant reuses a landscape fig's draw function unchanged."""
+
+    def __init__(self, height=1260):
+        self.height = height
+        self.W = W
+        self.H = height * S
+        self.dy = 0
+        self.img = Image.new("RGB", (self.W, self.H), BG)
         self.d = ImageDraw.Draw(self.img)
 
     def font(self, name, size):
@@ -54,7 +63,7 @@ class Ctx:
         return self.font("GeistMono-Bold", s)
 
     def text(self, xy, s, font, fill, anchor="la", tracking=0):
-        x, y = xy[0] * S, xy[1] * S
+        x, y = xy[0] * S, (xy[1] + self.dy) * S
         if tracking == 0:
             self.d.text((x, y), s, font=font, fill=fill, anchor=anchor)
             return
@@ -69,21 +78,31 @@ class Ctx:
             x += w + tracking * S
 
     def line(self, p1, p2, fill=LINE, width=2):
-        self.d.line([p1[0] * S, p1[1] * S, p2[0] * S, p2[1] * S], fill=fill, width=width * S)
+        self.d.line(
+            [p1[0] * S, (p1[1] + self.dy) * S, p2[0] * S, (p2[1] + self.dy) * S],
+            fill=fill, width=width * S,
+        )
+
+    def rect(self, p1, p2, fill):
+        self.d.rectangle(
+            [p1[0] * S, (p1[1] + self.dy) * S, p2[0] * S, (p2[1] + self.dy) * S],
+            fill=fill,
+        )
 
     def circle(self, c, r, outline=None, fill=None, width=2):
-        x, y = c[0] * S, c[1] * S
+        x, y = c[0] * S, (c[1] + self.dy) * S
         self.d.ellipse(
             [x - r * S, y - r * S, x + r * S, y + r * S],
             outline=outline, fill=fill, width=width * S,
         )
 
     def glow(self, c, layers=((110, 14), (78, 26), (50, 46))):
-        overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        cx, cy = c[0], c[1] + self.dy
+        overlay = Image.new("RGBA", (self.W, self.H), (0, 0, 0, 0))
         od = ImageDraw.Draw(overlay)
         for r, a in layers:
             od.ellipse(
-                [(c[0] - r) * S, (c[1] - r) * S, (c[0] + r) * S, (c[1] + r) * S],
+                [(cx - r) * S, (cy - r) * S, (cx + r) * S, (cy + r) * S],
                 fill=(*ACCENT, a),
             )
         self.img = Image.alpha_composite(self.img.convert("RGBA"), overlay).convert("RGB")
@@ -91,22 +110,33 @@ class Ctx:
 
     def frame(self, fig, caption):
         """Shared chrome: survey marks, fig line, coordinates, brand."""
-        for cx, cy in [(120, 110), (2280, 110), (120, 1150), (2280, 1150)]:
+        self.dy = 0
+        bottom = self.height - 110
+        for cx, cy in [(120, 110), (2280, 110), (120, bottom), (2280, bottom)]:
             self.line((cx - 14, cy), (cx + 14, cy), fill=FAINT, width=1)
             self.line((cx, cy - 14), (cx, cy + 14), fill=FAINT, width=1)
         self.text((170, 98), f"fig. {fig} · {caption}", self.mono(26), FAINT)
         self.text((2230, 98), "41.0082 N  28.9784 E", self.mono(26), FAINT, anchor="ra")
-        self.text((2230, 1138), "mhshakouri.dev", self.mono(28), MUTED, anchor="rm")
+        self.text((2230, self.height - 122), "mhshakouri.dev", self.mono(28), MUTED,
+                  anchor="rm")
 
-    def registry(self, hashes, x=170, y0=1138):
+    def registry(self, hashes, x=170):
+        self.dy = 0
         row = "   ".join(hashes)
-        self.text((x, y0), row, self.mono(24), REGISTRY, anchor="lm")
+        self.text((x, self.height - 122), row, self.mono(24), REGISTRY, anchor="lm")
 
-    def save(self, slug):
-        OUT_DIR.mkdir(parents=True, exist_ok=True)
-        out = OUT_DIR / f"{slug}.png"
-        self.img.resize((W // S, H // S), Image.LANCZOS).save(out)
-        print("saved", out)
+    def title_block(self, lines, hook, y=700, leading=128):
+        """Portrait only: the post title, so the image carries meaning in-feed."""
+        self.dy = 0
+        for i, line in enumerate(lines):
+            self.text((170, y + i * leading), line, self.monob(92), FG, anchor="lm")
+        self.text((170, y + len(lines) * leading + 32), hook, self.mono(38), MUTED,
+                  anchor="lm")
+
+    def save(self, path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        self.img.resize((self.W // S, self.H // S), Image.LANCZOS).save(path)
+        print("saved", path)
 
 
 # ---------------------------------------------------------------- fig. 00
@@ -150,7 +180,7 @@ def draw_push_to_publish(c: Ctx):
 
     c.text((X0, Y - 310), "$ git push", c.monob(56), FG, anchor="lm")
     caret = X0 + c.d.textlength("$ git push", font=c.monob(56)) / S + 24
-    c.d.rectangle([caret * S, (Y - 336) * S, (caret + 22) * S, (Y - 284) * S], fill=ACCENT)
+    c.rect((caret, Y - 336), (caret + 22, Y - 284), fill=ACCENT)
 
     c.text((tx(50), Y + 6), "100", c.font("Outfit-Regular", 430), GHOST, anchor="mm")
 
@@ -265,19 +295,57 @@ POSTERS = {
 }
 
 
+# Title and hook for the 4:5 social variant. Keep title lines under ~34 chars
+# so they fit at 84pt; the hook is one line of context for people who scroll past.
+SOCIAL = {
+    "spec-driven-development-with-ai": (
+        ["Spec-driven", "development with AI:", "what actually broke"],
+        "the model built my wrong design perfectly. twice.",
+    ),
+}
+
+
+def site_path(slug):
+    return f"mhshakouri.dev/blog/{slug}"
+
+
 def render(slug):
     fig, caption, draw, hashes = POSTERS[slug]
     c = Ctx()
     draw(c)
     c.frame(fig, caption)
     c.registry(hashes)
-    c.save(slug)
+    c.save(OUT_DIR / f"{slug}.png")
+
+
+def render_social(slug):
+    """4:5 portrait for LinkedIn: same fig, shifted down, title above it."""
+    if slug not in SOCIAL:
+        sys.exit(f"no SOCIAL entry for {slug}; add title lines and a hook first")
+    fig, caption, draw, hashes = POSTERS[slug]
+    title, hook = SOCIAL[slug]
+    c = Ctx(height=3000)
+    c.dy = 1300
+    draw(c)
+    c.title_block(title, hook)
+    c.text((1200, 2650), f"full write-up · {site_path(slug)}", c.mono(40), MUTED,
+           anchor="mm")
+    c.frame(fig, caption)
+    c.registry(hashes)
+    c.save(SOCIAL_DIR / f"{slug}-4x5.png")
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    slugs = POSTERS.keys() if "--all" in args else args
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags = {a for a in sys.argv[1:] if a.startswith("--")}
+    slugs = list(POSTERS) if "--all" in flags else args
     if not slugs:
-        sys.exit(f"usage: {sys.argv[0]} <slug>|--all   (known: {', '.join(POSTERS)})")
+        sys.exit(
+            f"usage: {sys.argv[0]} <slug>|--all [--social]\n"
+            f"  known: {', '.join(POSTERS)}"
+        )
     for slug in slugs:
-        render(slug)
+        if "--social" in flags:
+            render_social(slug)
+        else:
+            render(slug)
