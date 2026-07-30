@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Resume",
-  description: `Resume of ${resume.name}, ${resume.role}.`,
+  description: `Resume of ${resume.name}, ${resume.role}, ${resume.roleDetail}.`,
 };
 
 function Section({
@@ -26,6 +26,15 @@ function Section({
   );
 }
 
+function StackLine({ stack }: { stack: readonly string[] }) {
+  return (
+    <p className="mt-2 font-mono text-xs">
+      <span className="text-muted-foreground">Stack: </span>
+      {stack.join(" · ")}
+    </p>
+  );
+}
+
 export default function ResumePage() {
   return (
     <Container className="py-16 print:py-0">
@@ -34,7 +43,13 @@ export default function ResumePage() {
           <h1 className="text-3xl font-semibold tracking-tight">
             {resume.name}
           </h1>
-          <p className="text-muted-foreground mt-1">{resume.role}</p>
+          <p className="mt-1">
+            {resume.role}
+            <span className="text-muted-foreground">
+              {" · "}
+              {resume.roleDetail}
+            </span>
+          </p>
           <p className="text-muted-foreground mt-2 text-sm">
             {resume.location} · {resume.relocation}
           </p>
@@ -71,6 +86,51 @@ export default function ResumePage() {
         </p>
       </Section>
 
+      <Section title="AI-native engineering practice">
+        <dl className="space-y-3">
+          {resume.practice.map((item) => (
+            <div key={item.label} className="text-sm leading-relaxed">
+              <dt className="inline font-medium">{item.label}: </dt>
+              <dd className="text-muted-foreground inline">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+      </Section>
+
+      <Section title="Selected AI-built projects">
+        <div className="space-y-6 print:space-y-4">
+          {resume.projects.map((project) => (
+            <article key={project.name}>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                <h3 className="font-medium">{project.name}</h3>
+                <p className="text-muted-foreground font-mono text-xs">
+                  {project.status}
+                </p>
+              </div>
+              <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed">
+                {project.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+              {project.stack && <StackLine stack={project.stack} />}
+            </article>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Core skills">
+        <dl className="space-y-2 text-sm">
+          {resume.skills.map((group) => (
+            <div key={group.category}>
+              <dt className="inline font-medium">{group.category}: </dt>
+              <dd className="text-muted-foreground inline">
+                {group.items.join(", ")}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </Section>
+
       <Section title="Experience">
         <div className="space-y-8 print:space-y-5">
           {resume.experience.map((job) => (
@@ -89,26 +149,10 @@ export default function ResumePage() {
                   <li key={highlight}>{highlight}</li>
                 ))}
               </ul>
-              <p className="mt-2 font-mono text-xs">
-                <span className="text-muted-foreground">Stack: </span>
-                {job.stack.join(" · ")}
-              </p>
+              <StackLine stack={job.stack} />
             </article>
           ))}
         </div>
-      </Section>
-
-      <Section title="Skills">
-        <dl className="space-y-2 text-sm">
-          {resume.skills.map((group) => (
-            <div key={group.category}>
-              <dt className="inline font-medium">{group.category}: </dt>
-              <dd className="text-muted-foreground inline">
-                {group.items.join(", ")}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </Section>
 
       <Section title="Education">

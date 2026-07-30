@@ -3,13 +3,14 @@ import { Container } from "@/components/ui/Container";
 import { site } from "@/lib/site";
 
 const highlights = [
+  "Claude Code",
+  "Cursor",
+  "Spec-driven development",
+  "Agentic workflows",
   "TypeScript",
   "Vue / Nuxt",
   "React / Next.js",
   "Node.js",
-  "Design Systems",
-  "Performance",
-  "Accessibility",
 ];
 
 export default function HomePage() {
@@ -20,9 +21,9 @@ export default function HomePage() {
         Hi, I&apos;m Hossein.
       </h1>
       <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-relaxed">
-        A front-end developer at heart, with 15+ years building fast,
-        accessible, maintainable interfaces, crossing into the backend whenever
-        it helps the product ship.
+        Software engineer with 15+ years shipping production web systems, now
+        building AI-first. AI coding agents are my primary development
+        interface, not an assistant I occasionally reach for.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
@@ -61,16 +62,18 @@ export default function HomePage() {
         </h2>
         <div className="text-muted-foreground mt-4 max-w-xl space-y-4 leading-relaxed">
           <p>
-            I&apos;ve spent the last decade and a half shipping for the web:
-            from high-traffic platforms like Bama.ir, one of Iran&apos;s busiest
-            automotive marketplaces, to fintech systems that kept running
-            through nationwide network disruptions. I&apos;ve worked solo, led
-            teams, and everything in between.
+            I introduced and ran the first spec-driven AI development framework
+            at Bama.ir, one of Iran&apos;s busiest vehicle marketplaces, and
+            built payment interfaces AI-first for a fintech platform that stayed
+            available through nationwide network disruption. I have also shipped
+            a production Python application without hand-writing the Python, by
+            owning the architecture and directing the agent.
           </p>
           <p>
-            I value clean code, clear communication across teams, and quietly
-            getting things done. Currently based in {site.location}, open to
-            relocation worldwide.
+            My background is deep front-end, TypeScript with Vue/Nuxt and
+            React/Next.js, and I work comfortably across backend, APIs,
+            databases, and deployment. Based in {site.location}, open to
+            relocation and remote.
           </p>
         </div>
         <ul className="mt-6 flex max-w-xl flex-wrap gap-2">
