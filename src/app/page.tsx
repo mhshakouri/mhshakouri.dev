@@ -16,7 +16,9 @@ const highlights = [
 export default function HomePage() {
   return (
     <Container className="py-20">
-      <p className="text-accent font-mono text-sm">{site.role}</p>
+      <p className="text-accent font-mono text-sm">
+        {site.role} · {site.roleDetail}
+      </p>
       <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
         Hi, I&apos;m Hossein.
       </h1>

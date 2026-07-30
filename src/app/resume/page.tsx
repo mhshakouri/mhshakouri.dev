@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Resume",
-  description: `Resume of ${resume.name}, ${resume.role}, ${resume.roleDetail}.`,
+  description: `Resume of ${resume.name}, ${resume.role.toLowerCase()} with an AI-native practice.`,
 };
 
 function Section({

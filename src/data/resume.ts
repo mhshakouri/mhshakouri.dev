@@ -34,8 +34,8 @@ export type Education = {
 
 export const resume = {
   name: "Mohammad Hossein Shakouri",
-  role: "AI-Native Software Engineer",
-  roleDetail: "Full-Stack and Front-End",
+  role: "Senior Front-End Engineer",
+  roleDetail: "AI-Native Practice",
   location: "Istanbul, Türkiye",
   relocation: "Open to relocation and remote",
   summary:
@@ -127,7 +127,6 @@ export const resume = {
         "Spec-driven workflows",
         "AI-assisted refactoring and review",
         "Prompt and context design",
-        "LLM API integration",
       ],
     },
     {

@@ -3,10 +3,13 @@ export const site = {
   /* Compact brand for narrow viewports; matches the domain and his handles. */
   handle: "mhshakouri",
   fullName: "Mohammad Hossein Shakouri",
-  role: "AI-Native Software Engineer",
+  /* Title leads with the role recruiters search for; the practice is the
+     differentiator, not the headline. */
+  role: "Senior Front-End Engineer",
+  roleDetail: "AI-Native Practice",
   url: "https://mhshakouri.dev",
   description:
-    "Personal website of Hossein Shakouri, AI-native software engineer with 15+ years shipping production web systems. Writing on spec-driven development, AI-first delivery, and the web.",
+    "Personal website of Hossein Shakouri, senior front-end engineer with 15+ years shipping production web systems, now building AI-first. Writing on spec-driven development, AI-first delivery, and the web.",
   github: "https://github.com/mhshakouri",
   linkedin: "https://www.linkedin.com/in/mhshakouri",
   email: "mhshakouri@gmail.com",
