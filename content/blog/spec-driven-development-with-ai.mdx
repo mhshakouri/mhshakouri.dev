@@ -1,0 +1,159 @@
+---
+title: "Spec-driven development with AI: what actually broke"
+description: "Building a production platform with Claude Code as the primary interface, and the two design mistakes it implemented perfectly."
+date: "2026-07-30"
+tags: ["ai", "architecture", "process"]
+image: "/blog/spec-driven-development-with-ai.png"
+draft: false
+---
+
+I am building a platform for a steel supplier: a multilingual catalogue with a
+custom price-management engine, dated price history with trend charts, and a
+small CRM for sales leads. Next.js and Payload on MongoDB, self-hosted behind
+Caddy.
+
+I am building all of it with Claude Code as the primary interface, not as an
+autocomplete I occasionally accept. This post is about how that actually
+went, which is to say: about the two things I got wrong and what they taught
+me. Partly a reference for future me, partly because every post I read about
+AI-assisted development stops at "it made me faster" and none of them
+mention what it does to the parts of the job that are still yours.
+
+## Spec first, because generation is no longer the bottleneck
+
+Before any code, I wrote an architecture document, a data model, nine
+architecture decision records, a milestone roadmap, and an operations
+runbook. That sounds like a lot of ceremony for a brochure site with a
+pricing feature. It is not ceremony; it is where the work moved to.
+
+The reason is simple. When implementation was expensive, it made sense to
+think a little and code a lot, discovering the design by writing it. Now
+implementation is close to free, and the constraint has moved upstream. The
+AI will faithfully build whatever I describe, at speed, including a design
+that does not survive contact with the domain. So the specs are not
+documentation of the work. They *are* the work.
+
+The ADRs turned out to be worth more than I expected, for a reason I did not
+anticipate: they are stable context. A decision recorded with its reasoning
+stops getting relitigated in later sessions. Without them, every fresh
+context window is an invitation to redesign something that was already
+settled for good reasons I could no longer remember either.
+
+## What broke, first: the domain model
+
+Steel pricing looks trivial until you look at it. My first model put price on
+the product:
+
+```ts
+// Wrong. Cannot represent reality.
+type Product = {
+  title: string;
+  currentPrice: number;
+  currency: string;
+};
+```
+
+That model cannot express any of the four cases the client actually has: a
+product with no price at all, a product priced only on request, a product
+with a single price, and a product with a table of prices from different
+producers, each with its own attributes and its own history to chart.
+
+So I split pricing out, and got it wrong a second time. I put free-form
+attributes on each price row, which meant every row for the same product
+could drift, and nothing owned the definition of the table columns.
+
+The shape that finally worked has three levels:
+
+```ts
+// The product owns the schema: what columns its listings must have.
+type Product = {
+  title: string;
+  priceAttributes: { key: string; label: string; required: boolean }[];
+};
+
+// A listing is one offering: a producer, with values for that schema.
+type PriceListing = {
+  product: Product["id"];
+  priceType: "priced" | "callOnly";
+  currency: string;
+  attributeValues: { key: string; value: string }[];
+};
+
+// An entry is one dated price. The series is the history and the chart.
+type PriceEntry = {
+  listing: PriceListing["id"];
+  price: number;
+  date: string;
+};
+```
+
+Both times, the AI built my wrong model correctly and quickly. It did not
+hesitate, and it did not ask whether the model matched the business. Why
+would it? It had a specification and it met it.
+
+That is the part worth internalizing. **A tool that removes the cost of
+implementation also removes the friction that used to make you notice a bad
+design.** Writing three hundred lines by hand for a model that feels awkward
+is itself a signal. Getting three hundred correct lines in twenty seconds is
+not.
+
+## What broke, quietly: calendars
+
+The client thinks in the Shamsi calendar, so I stored Shamsi dates. Every
+comparison, every sort, every chart aggregation then had to go through
+conversion, and the bugs it produced were the annoying kind: not crashes,
+just wrong ordering.
+
+The fix is the boring one. Store Gregorian days internally, normalized to the
+Tehran day so a price entered at 1am lands on the correct local date, and
+convert to Shamsi only at the edges for display. Charts read the internal
+dates and format the axis labels.
+
+No AI involvement in that mistake at all. I made it before the specs, in the
+part of the design where I was being considerate rather than careful.
+
+## The one thing AI could not shortcut
+
+The price attributes are dynamic per product, but CMS fields are defined
+statically in code. So there is no built-in way to render the right labelled
+inputs for whichever product an editor has selected. That needs a custom
+admin component that reads the product's schema at runtime and builds the
+form from it.
+
+I could have shipped a generic key-value input in an afternoon. I decided not
+to, because entering prices is the client's daily task and a bad form is a
+bad product, and instead opened that work with a short throwaway spike to
+confirm the framework's component APIs behave before committing to the real
+implementation.
+
+That decision has nothing to do with AI, and that is precisely the point.
+Knowing which corner is worth cutting is not a thing the model has an opinion
+about.
+
+## What I actually changed about how I work
+
+**Be precise about the problem, because the AI will be precise about the
+solution.** Nearly all of my failures on this project were specification
+failures, not generation failures.
+
+**Write the reasoning down, not just the decision.** ADRs are context that
+survives a session boundary.
+
+**Use AI to review AI.** Having it check its own output against the spec
+catches a real share of issues before I run anything.
+
+**Own the domain model personally.** It is the one place where being wrong is
+expensive and the model cannot save you, because it has no way to know the
+business.
+
+**Ship earlier than feels comfortable.** Rework is cheap now. Discovering
+the model is wrong against real usage beats trying to be right on paper.
+
+## Where this lands
+
+I have shipped more in the last month than in any comparable stretch of my
+career, and I have also written more specification than in any comparable
+stretch. Those two facts are the same fact.
+
+The generation was never the hard part. It just used to be slow enough that
+it felt like the job.

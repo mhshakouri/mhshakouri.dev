@@ -193,11 +193,75 @@ def draw_push_to_publish(c: Ctx):
             c.text((tx(sec), RY + 56), f"{sec}s", c.mono(28), MUTED, anchor="mm")
 
 
+# ---------------------------------------------------------------- fig. 02
+
+def draw_spec_driven_development_with_ai(c: Ctx):
+    """The pricing model that took three attempts: product owns the schema,
+    listings are offerings, entries are the dated series that becomes a chart."""
+    c.text((1560, 700), "v3", c.font("Outfit-Regular", 400), GHOST, anchor="mm")
+
+    # The two rejected models, struck through, for whoever leans in.
+    for y, label in [(206, "v1  price on the product"),
+                     (252, "v2  attributes on each row")]:
+        c.text((170, y), label, c.mono(26), REGISTRY, anchor="lm")
+        width = c.d.textlength(label, font=c.mono(26)) / S
+        c.line((170, y), (170 + width, y), fill=REGISTRY, width=1)
+
+    PROD_X, LIST_X = 440, 940
+    c.text((PROD_X, 560), "product", c.mono(38), FG, anchor="mm")
+    c.text((PROD_X, 715), "owns the schema", c.mono(26), MUTED, anchor="mm")
+    c.text((LIST_X, 375), "price listings", c.mono(38), FG, anchor="mm")
+    c.text((LIST_X, 418), "one per producer", c.mono(26), MUTED, anchor="mm")
+
+    listings = [470, 640, 810]
+    for y in listings:
+        c.line((PROD_X, 640), (LIST_X, y), width=2)
+    c.circle((PROD_X, 640), 15, outline=FG, width=3)
+    for y in listings:
+        c.circle((LIST_X, y), 12, outline=FG, width=3)
+
+    # The two outer listings carry their own series; hinted, not drawn.
+    for y in (470, 810):
+        c.line((LIST_X + 20, y), (1120, y), fill=FAINT, width=1)
+        for dot_x in (1152, 1184, 1216):
+            c.circle((dot_x, y), 4, fill=REGISTRY)
+
+    c.text((1660, 452), "price entries", c.mono(38), FG, anchor="mm")
+    c.text((1660, 495), "one dated series per listing", c.mono(26), MUTED,
+           anchor="mm")
+
+    series = [(1260, 700), (1400, 682), (1540, 712), (1680, 648),
+              (1820, 660), (1940, 600), (2060, 548)]
+    c.line((LIST_X + 20, 640), series[0], width=2)
+    for a, b in zip(series, series[1:]):
+        c.line(a, b, fill=ACCENT, width=2)
+    for x, y in series[:-1]:
+        c.circle((x, y), 6, fill=MUTED)
+
+    AXIS_Y = 880
+    c.line((series[0][0], AXIS_Y), (series[-1][0], AXIS_Y), fill=LINE, width=1)
+    for x, _ in series:
+        c.line((x, AXIS_Y), (x, AXIS_Y + 12), fill=FAINT, width=1)
+    c.text((1660, 938), "stored gregorian · displayed shamsi", c.mono(26),
+           FAINT, anchor="mm")
+
+    c.glow(series[-1])
+    c.circle(series[-1], 16, fill=ACCENT)
+    c.circle(series[-1], 29, outline=ACCENT_DIM, width=2)
+
+    c.text((1200, 1052), "the specs are the work", c.mono(34), MUTED,
+           anchor="mm")
+
+
 POSTERS = {
     "building-this-site": ("00", "building this site", draw_building_this_site,
                            ["8a92621", "6440915", "d2602ee", "3882e00", "8f0dbbd"]),
     "push-to-publish": ("01", "push to publish", draw_push_to_publish,
                         ["6a5d55d", "a3b1c10", "bb5cb26", "a9af5dd", "5176684"]),
+    "spec-driven-development-with-ai": ("02", "spec-driven development",
+                                        draw_spec_driven_development_with_ai,
+                                        ["a925311", "4c75d3f", "5176684",
+                                         "e09d750", "8b4376a"]),
 }
 
 

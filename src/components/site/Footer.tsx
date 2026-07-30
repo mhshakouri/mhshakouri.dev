@@ -7,6 +7,12 @@ export function Footer() {
       <Container className="text-muted-foreground flex h-16 items-center justify-between text-sm">
         <p>
           © {new Date().getFullYear()} {site.name}
+          <span className="hidden sm:inline">
+            {" · "}
+            <span title="Designed and written by me, implemented with AI coding agents">
+              Built AI-first
+            </span>
+          </span>
         </p>
         <div className="flex items-center gap-4">
           <a
