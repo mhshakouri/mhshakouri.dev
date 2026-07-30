@@ -62,18 +62,16 @@ export default function HomePage() {
         </h2>
         <div className="text-muted-foreground mt-4 max-w-xl space-y-4 leading-relaxed">
           <p>
-            I introduced and ran the first spec-driven AI development framework
-            at Bama.ir, one of Iran&apos;s busiest vehicle marketplaces, and
-            built payment interfaces AI-first for a fintech platform that stayed
-            available through nationwide network disruption. I have also shipped
-            a production Python application without hand-writing the Python, by
-            owning the architecture and directing the agent.
+            I&apos;ve spent the last decade and a half shipping for the web:
+            from high-traffic platforms like Bama.ir, one of Iran&apos;s busiest
+            vehicle marketplaces, to fintech systems that kept running through
+            nationwide network disruption. I&apos;ve worked solo, led teams, and
+            everything in between.
           </p>
           <p>
-            My background is deep front-end, TypeScript with Vue/Nuxt and
-            React/Next.js, and I work comfortably across backend, APIs,
-            databases, and deployment. Based in {site.location}, open to
-            relocation and remote.
+            I value clean code, clear communication across teams, and quietly
+            getting things done. Based in {site.location}, open to relocation
+            and remote.
           </p>
         </div>
         <ul className="mt-6 flex max-w-xl flex-wrap gap-2">
