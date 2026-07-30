@@ -39,19 +39,11 @@ export const resume = {
   location: "Istanbul, Türkiye",
   relocation: "Open to relocation and remote",
   summary:
-    "Software engineer with 15+ years shipping production web systems, now building AI-first. AI coding agents are my primary development interface, not an assistant I occasionally reach for. I built and ran a spec-driven development framework at a high-traffic marketplace, wrote a Cursor-to-Figma implementation workflow before it was common practice, and have shipped working software in languages I do not write by hand by directing AI instead. Deep front-end background in TypeScript with Vue/Nuxt and React/Next.js, comfortable across backend, APIs, databases, and deployment. I ship, then iterate.",
+    "Front-end engineer with 15+ years shipping production web systems: large-scale Vue/Nuxt and React/Next.js applications in TypeScript, built for performance, accessibility, and scale at Iran's leading vehicle marketplace, plus payment interfaces for a live fintech platform. Comfortable across backend, APIs, databases, and deployment when it helps the product ship. I now work AI-first: coding agents are my primary development interface, and I own the specs, the architecture, and the review. I introduced and ran the first spec-driven AI development framework at my company, and have shipped production software in languages I do not write by hand. I ship, then iterate.",
   practice: [
     {
-      label: "Primary tooling",
-      body: "Claude Code and Cursor as the main interface for building, refactoring, testing, and documenting. Workflows evolve continuously as the tools change.",
-    },
-    {
       label: "Spec-driven development",
-      body: "Designed and ran a spec-to-implementation framework at Bama.ir, working inside it daily. Specs and architecture documents drive the build; the AI implements against them.",
-    },
-    {
-      label: "Agentic development",
-      body: "Comfortable decomposing a vague problem into architecture, decision records, and milestones that an agent can execute end to end.",
+      body: "Designed and ran a spec-to-implementation framework at Bama.ir, the first at the company, working inside it daily. Architecture documents, decision records, and milestones drive the build; the AI implements against them.",
     },
     {
       label: "Review and guardrails",
@@ -109,38 +101,11 @@ export const resume = {
         "R2",
       ],
     },
-    {
-      name: "Cursor to Figma Implementation Workflow",
-      status: "internal tooling",
-      highlights: [
-        "Built an AI workflow that read Figma designs and implemented the corresponding front-end, before design-to-code AI tooling was widely available.",
-      ],
-    },
   ] satisfies Project[],
+  /* Frontend leads: recruiters scan this list for the requisition's keywords.
+     PHP and C# are deliberately absent; they remain visible in the experience
+     stack lines, which is context rather than a capability being sold. */
   skills: [
-    {
-      category: "AI Development",
-      items: [
-        "Claude Code",
-        "Cursor",
-        "Agentic workflows",
-        "Spec-driven workflows",
-        "AI-assisted refactoring and review",
-        "Prompt and context design",
-      ],
-    },
-    {
-      category: "Languages",
-      items: [
-        "TypeScript",
-        "JavaScript (ES6+)",
-        "HTML5",
-        "CSS3",
-        "Python",
-        "PHP",
-        "C#",
-      ],
-    },
     {
       category: "Frontend",
       items: [
@@ -158,6 +123,21 @@ export const resume = {
         "SSR and SSG",
         "Accessibility",
         "Performance",
+      ],
+    },
+    {
+      category: "Languages",
+      items: ["TypeScript", "JavaScript (ES6+)", "HTML5", "CSS3", "Python"],
+    },
+    {
+      category: "AI Development",
+      items: [
+        "Claude Code",
+        "Cursor",
+        "Agentic workflows",
+        "Spec-driven workflows",
+        "AI-assisted refactoring and review",
+        "Prompt and context design",
       ],
     },
     {

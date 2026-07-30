@@ -3,14 +3,14 @@ import { Container } from "@/components/ui/Container";
 import { site } from "@/lib/site";
 
 const highlights = [
-  "Claude Code",
-  "Cursor",
-  "Spec-driven development",
-  "Agentic workflows",
   "TypeScript",
   "Vue / Nuxt",
   "React / Next.js",
-  "Node.js",
+  "Performance",
+  "Accessibility",
+  "Design systems",
+  "Claude Code",
+  "Spec-driven development",
 ];
 
 export default function HomePage() {
@@ -23,9 +23,10 @@ export default function HomePage() {
         Hi, I&apos;m Hossein.
       </h1>
       <p className="text-muted-foreground mt-6 max-w-xl text-lg leading-relaxed">
-        Software engineer with 15+ years shipping production web systems, now
-        building AI-first. AI coding agents are my primary development
-        interface, not an assistant I occasionally reach for.
+        Front-end engineer with 15+ years shipping production web systems in
+        Vue, Nuxt, React, and Next.js. I now work AI-first: coding agents are my
+        primary development interface, and I own the specs, the architecture,
+        and the review.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link

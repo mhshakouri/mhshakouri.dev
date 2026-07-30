@@ -86,6 +86,32 @@ export default function ResumePage() {
         </p>
       </Section>
 
+      {/* Experience before the AI sections: 15 years of front-end delivery is
+          the qualifier, the AI-native practice is the differentiator. */}
+      <Section title="Experience">
+        <div className="space-y-8 print:space-y-5">
+          {resume.experience.map((job) => (
+            <article key={`${job.company}-${job.period}`}>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
+                <h3 className="font-medium">
+                  {job.title} ·{" "}
+                  <span className="text-muted-foreground">{job.company}</span>
+                </h3>
+                <p className="text-muted-foreground font-mono text-xs">
+                  {job.period}
+                </p>
+              </div>
+              <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed">
+                {job.highlights.map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+              <StackLine stack={job.stack} />
+            </article>
+          ))}
+        </div>
+      </Section>
+
       <Section title="AI-native engineering practice">
         <dl className="space-y-3">
           {resume.practice.map((item) => (
@@ -129,30 +155,6 @@ export default function ResumePage() {
             </div>
           ))}
         </dl>
-      </Section>
-
-      <Section title="Experience">
-        <div className="space-y-8 print:space-y-5">
-          {resume.experience.map((job) => (
-            <article key={`${job.company}-${job.period}`}>
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-                <h3 className="font-medium">
-                  {job.title} ·{" "}
-                  <span className="text-muted-foreground">{job.company}</span>
-                </h3>
-                <p className="text-muted-foreground font-mono text-xs">
-                  {job.period}
-                </p>
-              </div>
-              <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed">
-                {job.highlights.map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-              <StackLine stack={job.stack} />
-            </article>
-          ))}
-        </div>
       </Section>
 
       <Section title="Education">
