@@ -1,9 +1,65 @@
-/* A0 acceptance test: full session lifecycle plus two-client sync. */
-const BASE = "http://localhost:8799";
+/* A0 acceptance test: full session lifecycle plus two-client sync.
+
+   Runs standalone: if nothing is listening on the port it starts
+   `wrangler dev` itself and shuts it down afterwards. If a dev server is
+   already running it uses that one and leaves it alone. */
+import { spawn } from "node:child_process";
+
+const PORT = 8787;
+const BASE = `http://localhost:${PORT}`;
 const ok = [];
 const bad = [];
 const check = (name, pass, detail = "") =>
   (pass ? ok : bad).push(`${name}${detail ? ` (${detail})` : ""}`);
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function isUp() {
+  try {
+    await fetch(BASE, { signal: AbortSignal.timeout(1000) });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+let worker = null;
+if (await isUp()) {
+  console.log(`using the dev server already on :${PORT}\n`);
+} else {
+  console.log(`starting wrangler dev on :${PORT} ...`);
+  worker = spawn(
+    "npx",
+    [
+      "wrangler",
+      "dev",
+      "-c",
+      "workers/arrowword/wrangler.jsonc",
+      "--port",
+      String(PORT),
+    ],
+    { stdio: "ignore", detached: false },
+  );
+  const deadline = Date.now() + 60_000;
+  while (!(await isUp())) {
+    if (Date.now() > deadline) {
+      worker.kill();
+      console.error(`wrangler dev did not come up on :${PORT} within 60s`);
+      process.exit(1);
+    }
+    await sleep(500);
+  }
+  console.log("worker ready\n");
+}
+
+const stopWorker = () => {
+  if (worker && !worker.killed) worker.kill("SIGTERM");
+};
+process.on("exit", stopWorker);
+process.on("SIGINT", () => {
+  stopWorker();
+  process.exit(130);
+});
 
 const create = await (
   await fetch(`${BASE}/session`, { method: "POST" })
@@ -161,4 +217,5 @@ if (bad.length) {
   console.log(`\nFAIL ${bad.length}`);
   for (const t of bad) console.log("  FAIL " + t);
 }
+stopWorker();
 process.exit(bad.length ? 1 : 0);
