@@ -48,10 +48,11 @@ Draft posts (`draft: true`) are safe on main: excluded from prod builds.
 
 ## Conventions
 
-- NEVER use the em dash character (—) anywhere: site content, UI copy, code
-  comments, docs, commit messages, generated images, drafts written for
-  Hossein. Use commas, colons, semicolons, periods, plain hyphens, or a
-  middle dot (·) for label separators instead. This is a hard rule.
+- Playground and side projects NEVER live in this repo. No `src/app/playground/`,
+  no demo app code, no dependencies added for them. Each one is its own
+  repository, its own deploy, its own subdomain (arrowword.mhshakouri.dev is the
+  pattern). This site may link to them and describe them; it must not host them.
+  Design tokens are copied into those projects, never imported.
 - Components: `src/components/ui/` for primitives, `src/components/site/` for site chrome (nav, footer). PascalCase files for components.
 - Prefer Server Components; add `"use client"` only where interactivity requires it.
 - Design tokens live as CSS custom properties in `globals.css` - no hardcoded colors in components.
@@ -71,6 +72,6 @@ Draft posts (`draft: true`) are safe on main: excluded from prod builds.
   every diff and wants to keep full mental ownership of the codebase.
 - Explain non-obvious changes and decisions briefly when making them - what and why,
   not a lecture.
-- Some features (notably `/playground` demos and design decisions) are hands-on for
-  Hossein; offer review rather than implementation there unless asked.
+- Design decisions are hands-on for Hossein; offer review rather than
+  implementation there unless asked.
 - Prefer plan mode / proposing an approach before large multi-file changes.

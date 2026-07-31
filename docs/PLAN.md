@@ -15,7 +15,7 @@ The directory `/Users/hossein/Projects/personal/mhshakouri` is currently empty.
 - **Content**: MDX files in `/content`, typed via **content-collections** (the maintained Contentlayer successor) - blog posts, projects, talks as type-safe collections
 - **Hosting**: Cloudflare, deployed with **@opennextjs/cloudflare** (Cloudflare's current recommended path for Next.js; supports the server function we need for the contact form). Git-push-to-deploy from GitHub.
 - **Design**: from scratch - define a small design-token system first (typography scale, color palette with dark mode, spacing) before building pages
-- **v1 scope**: Home/About, Projects, Blog, Resume (+ PDF), Uses, Talks/OSS, Playground (interactive demos), Contact form
+- **v1 scope**: Home/About, Projects (index linking to external work), Blog, Resume (+ PDF), Uses, Talks/OSS, Contact form
 
 ## Repo layout (target)
 
@@ -32,7 +32,6 @@ mhshakouri/
 │   │   ├── (site)/            # home, about, uses, resume, contact
 │   │   ├── blog/[slug]/
 │   │   ├── projects/[slug]/
-│   │   ├── playground/
 │   │   └── api/contact/       # route handler → Resend email
 │   ├── components/            # ui/ (primitives) + site/ (nav, footer…)
 │   ├── lib/                   # utilities, seo helpers
@@ -79,11 +78,34 @@ Each milestone is a small, reviewable chunk - commit at the end of each so the g
   schemas are already in place from M3.
 - Talks/open-source section (can live on one page initially)
 
-### M5 - Playground (hands-on, post-launch)
+### M5 - Projects index (post-launch)
 
-- `/playground` index; each demo is a self-contained client component route
-- Good candidates for the **hands-on** track - build demos yourself, use Claude for review
+- `/projects` lists both case studies and standalone side projects. Every entry
+  is one MDX file in the existing `projects` collection, whose schema already
+  carries `repo` and `live` URLs. No app code, no new routes beyond `[slug]`.
+- Side projects are linked, never hosted. See the rule below.
 - Uses page is also planned post-launch (guidelines session with Claude)
+
+### Side projects live outside this repo (decided 2026-07-31)
+
+Playground and experiment code never enters this codebase. Each project gets its
+own repository, its own deploy, and its own subdomain. Arrowword is the first and
+sets the pattern: `github.com/mhshakouri/arrowword`, served at
+`arrowword.mhshakouri.dev`.
+
+Reasons, in order of weight:
+
+1. **No dependency pollution.** A demo needing an image library must not widen
+   this site's dependency tree, install time, or security surface.
+2. **Independent lifecycles.** The site is stable and content-driven; a side
+   project churns. They should not share a deploy pipeline.
+3. **A broken experiment cannot block a blog post.** Workers Builds deploys on
+   every push to main, so a failing build in shared code would stop publishing.
+4. **Clean portfolio surface.** A reader browsing this repo sees a website, not
+   a website plus several half-built apps.
+
+Cost accepted: design tokens are copied into each project rather than imported,
+and each project carries its own CI.
 
 ### M6 - Contact form
 
@@ -104,7 +126,7 @@ This section is the "how to use Claude Code" answer, and its essence goes into C
 - **CLAUDE.md** = persistent project memory: stack, commands, conventions, preferences. Claude reads it every session. Keep it short and current.
 - **Plan mode** (shift+tab) for anything non-trivial: Claude proposes before touching code - the main steering tool.
 - **Review every diff** at first; ask "walk me through what you changed and why" - cheap and fast way to keep full mental ownership.
-- **Split the work deliberately**: let Claude do scaffolding, config, boilerplate, SEO plumbing; keep design decisions and playground demos hands-on. Claude reviews your code too (`/code-review` on a branch).
+- **Split the work deliberately**: let Claude do scaffolding, config, boilerplate, SEO plumbing; keep design decisions hands-on. Claude reviews your code too (`/code-review` on a branch).
 - **Small commits per milestone/feature** so everything is inspectable and revertable.
 - **Skills** (`/init`, `/code-review`, `/verify`) are just packaged workflows - no setup needed now; custom skills/hooks can come later once the basics feel natural.
 

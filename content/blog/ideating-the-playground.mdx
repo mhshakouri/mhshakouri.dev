@@ -1,51 +1,77 @@
 ---
-title: "Ideating the playground"
-description: "Thinking out loud about what a personal-site playground is for, and how I'm choosing what to build first."
-date: "2026-07-05"
-tags: ["playground", "meta"]
+title: "Side projects do not belong in your personal site"
+description: "Why every experiment I build gets its own repo, its own deploy, and its own subdomain, and what changed my mind."
+date: "2026-07-31"
+tags: ["architecture", "meta"]
 draft: true
 ---
 
 {/* SKELETON: Hossein's post to write. draft: true keeps it unpublished.
-    The comments below are prompts, not content; they don't render even if
-    published. Delete freely, restructure freely; this outline is a starting
-    point, not a spec. */}
+    The comments below are prompts, not content; they do not render even if
+    published. Delete freely, restructure freely. This outline is a starting
+    point, not a spec.
 
-{/* Opening: why does a personal site need a playground at all? Your angle
-    from our discussion: demos as *proof of resume claims*, not decoration.
-    What made you want one? */}
+    The premise changed on 2026-07-31. The old draft was "why a personal site
+    needs a playground". Then you built one, watched it grow a backend, and
+    moved it out. That reversal is the post. */}
 
-## What a playground is for
+{/* Opening: the plan was a /playground section on this site, each demo a
+    self-contained route. Say what you actually built instead, and how fast
+    the assumption broke. */}
 
-{/* The honest version: portfolios show outcomes, playgrounds show how you
-    think. A senior engineer's demo reveals taste: what edge cases they
-    handle, what they consider "done". */}
+## What I thought I was building
 
-## The constraint that matters: finishability
+{/* Portfolios show outcomes, playgrounds show how you think. That part was
+    right and still is. A senior engineer's demo reveals taste: what edge
+    cases they handle, what they consider "done". */}
 
-{/* Half-finished demos are worse than none. Each demo should be small
-    enough to complete in a few evenings, self-contained (one client
-    component route), and interesting enough to pair with a blog post. */}
+## The project that broke the assumption
 
-## The candidates
+{/* Arrowword: two people solving a photographed Persian crossword together
+    on separate devices. Started as a demo. By the time the spec was done it
+    had a Durable Object per session, R2 storage, a WebSocket protocol, and
+    six milestones.
 
-{/* The shortlist from ideation: your take on each, which ones excite you,
-    which feel like obligation. Reorder by YOUR interest, not strategy:
-    - Design-token theme editor (live-edits this site's own CSS custom
-      properties, contrast checking built in, ties to the a11y work)
-    - OTP input done properly (paste, RTL digits, screen readers, the
-      fintech itch)
-    - Real-time demo over WebSockets
-    - Rendering-performance visualizer (virtualized vs naive, live FPS)
-    - A/B test significance simulator */}
+    The tell: it had users. Not visitors, users. You and your partner, with
+    data you would be annoyed to lose. */}
 
-## How I'm choosing
+## Demo versus product
 
-{/* Your actual decision criteria. From our discussion: story-value per unit
-    of effort, and whether one piece of work feeds three surfaces (demo +
-    blog post + LinkedIn). But write what YOU actually weigh. */}
+{/* The distinction worth naming, because it is the whole decision:
 
-## First up
+    A demo is finishable in a few evenings, has no backend, no data worth
+    keeping, and no users. It belongs on your site.
 
-{/* Which one won and why. If it's the theme editor: there's something
-    fitting about the first demo being the site inspecting itself. */}
+    A product has its own release cadence, its own dependencies, and someone
+    who notices when it breaks. It does not.
+
+    Your own test: does it have a backend, and would anyone care if it went
+    down? */}
+
+## What actually goes wrong when you mix them
+
+{/* Four costs, all real, roughly in order of how much they bite:
+    - dependency pollution: a demo's image library widens the site's install
+      time and security surface
+    - a broken experiment blocks a blog post, because push to main deploys
+      the site
+    - two lifecycles in one git history, one stable and one churning
+    - a reader browsing the repo sees a website plus half-built apps
+
+    Worth being honest that none of these had bitten yet when you split. You
+    moved on principle, and the principle is that the cheap moment to split
+    is before the coupling exists, not after. */}
+
+## What I do now
+
+{/* Own repo, own deploy, own subdomain. arrowword.mhshakouri.dev. The site
+    links out and describes the work; it never hosts it.
+
+    The cost you accepted: design tokens get copied rather than imported, and
+    every project carries its own CI. Say whether that has hurt yet. */}
+
+## Where this lands
+
+{/* Something honest about the difference between a portfolio and a workshop.
+    A portfolio is a place you point at. A workshop is a place you work. They
+    have different requirements and pretending otherwise makes both worse. */}
