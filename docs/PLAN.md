@@ -7,7 +7,9 @@ Hossein is a senior frontend/software engineer building his personal site at **m
 1. Ship a high-quality personal site (Next.js App Router, hosted on Cloudflare).
 2. Set the project up so the workflow is **hybrid**: AI-driven when he wants speed, hands-on when he wants to write code himself - and always understandable and steerable.
 
-The directory `/Users/hossein/Projects/personal/mhshakouri` is currently empty.
+**Status, 2026-07-31: live in production.** M0 to M3, M6 and M7 are complete.
+M4 (case studies) and M5 (projects index) are deferred post-launch, and `/uses`
+is still a stub, hidden from nav. Process gates live in `docs/PROCESS.md`.
 
 ## Decisions (from Q&A)
 
@@ -43,7 +45,7 @@ mhshakouri/
 
 Each milestone is a small, reviewable chunk - commit at the end of each so the git history doubles as a learning trail.
 
-### M0 - Foundation & Claude Code setup
+### M0 - Foundation & Claude Code setup [DONE]
 
 - `git init`, create GitHub repo
 - Scaffold Next.js with `create-next-app` (TypeScript, Tailwind, App Router, src dir)
@@ -51,25 +53,25 @@ Each milestone is a small, reviewable chunk - commit at the end of each so the g
 - Write **CLAUDE.md**: stack, commands (`dev`, `build`, `lint`), conventions (naming, component patterns, "explain non-obvious changes"), and a note that Hossein wants to review diffs and understand changes - not just accept them
 - First commit + push
 
-### M1 - Design system
+### M1 - Design system [DONE]
 
 - Tailwind v4 theme: CSS custom properties for colors (light/dark), font pairing (e.g. a display font + system/sans body via `next/font`), spacing/typography scale
 - Dark mode toggle (class strategy, no-flash script)
 - Base layout: header/nav, footer, container; `ui/` primitives (Button, Link, Card, Prose)
 
-### M2 - Core pages
+### M2 - Core pages [DONE, /uses still a stub]
 
 - Home/About: intro, role, social links (GitHub/LinkedIn/email)
 - Resume page from structured data (`src/data/resume.ts`) + print-stylesheet or generated PDF download
 - Uses page (static MDX or simple page)
 
-### M3 - Content layer & blog
+### M3 - Content layer & blog [DONE]
 
 - Set up content-collections with schemas for `blog`, `projects`, `talks`
 - Blog index + `[slug]` pages with MDX rendering, code syntax highlighting (Shiki), reading time
 - RSS feed, sitemap, `metadata` API for SEO/OpenGraph (+ dynamic OG images via `next/og` later if desired)
 
-### M4 - Projects & Talks/OSS (DEFERRED post-launch - decided 2026-07-05)
+### M4 - Case studies [TODO, deferred post-launch, decided 2026-07-05]
 
 - Reframed as **case studies of professional work** (Bama TypeScript migration,
   Tanincard fintech resilience, this website), not a repo-link portfolio grid.
@@ -78,7 +80,7 @@ Each milestone is a small, reviewable chunk - commit at the end of each so the g
   schemas are already in place from M3.
 - Talks/open-source section (can live on one page initially)
 
-### M5 - Projects index (post-launch)
+### M5 - Projects index [TODO, post-launch]
 
 - `/projects` lists both case studies and standalone side projects. Every entry
   is one MDX file in the existing `projects` collection, whose schema already
@@ -107,12 +109,12 @@ Reasons, in order of weight:
 Cost accepted: design tokens are copied into each project rather than imported,
 and each project carries its own CI.
 
-### M6 - Contact form
+### M6 - Contact form [DONE, verified with a real email]
 
 - Route handler `POST /api/contact` → send email via **Resend** (free tier); honeypot + basic rate limiting
 - This is why we deploy with OpenNext rather than static export
 
-### M7 - Deploy & domain
+### M7 - Deploy & domain [DONE, Lighthouse 98/100/100/100]
 
 - `@opennextjs/cloudflare` setup, `wrangler.jsonc`, deploy via Cloudflare's git integration (preview deployments per PR)
 - Point mhshakouri.dev DNS, set up redirects (www → apex)
@@ -129,6 +131,24 @@ This section is the "how to use Claude Code" answer, and its essence goes into C
 - **Split the work deliberately**: let Claude do scaffolding, config, boilerplate, SEO plumbing; keep design decisions hands-on. Claude reviews your code too (`/code-review` on a branch).
 - **Small commits per milestone/feature** so everything is inspectable and revertable.
 - **Skills** (`/init`, `/code-review`, `/verify`) are just packaged workflows - no setup needed now; custom skills/hooks can come later once the basics feel natural.
+
+## Shipped beyond the original plan
+
+Things that were not milestones but are now part of the site, recorded so they
+are not mistaken for accidents:
+
+- **Blog poster series** ("Terminal Cartography"): `scripts/generate-poster.py`
+  renders a per-post header that doubles as the og:image, plus a 4:5 portrait
+  variant for LinkedIn into `assets/social/`, which is outside `public/` and
+  never served. One fig number per post.
+- **Drafts visible in dev only.** `publishedPosts` filters on `NODE_ENV`, so
+  drafts render in `next dev` with a badge and can never reach a build.
+- **AI-native repositioning** (2026-07-30): the resume, home copy, and page
+  titles moved to "Senior Front-End Engineer, AI-Native Practice". The title
+  leads with the role recruiters search for; the practice is the differentiator.
+  Front-end depth is the qualifier and comes first on the page.
+- **Two published posts** plus one draft. The published ones are written in
+  Hossein's voice and are his to edit.
 
 ## Verification
 
