@@ -38,13 +38,43 @@ Draft posts (`draft: true`) are safe on main: excluded from prod builds.
 - `npm run preview:cf` - build + run on workerd locally (the real CF runtime)
 - `npm run deploy` - build + deploy to Cloudflare (needs `wrangler login`)
 
-## Cloudflare gotchas (learned in M7)
+## Process
 
-- Workers forbids `eval`/`new Function`: MDX pages MUST be fully prerendered.
-  Keep `dynamicParams = false` on MDX routes and the static-assets incremental
-  cache in `open-next.config.ts`. A blog post rendering at request time will 500.
-- Secrets for production go in via `wrangler secret put` (e.g. RESEND_API_KEY),
-  not committed vars. Local workerd preview reads `.env.local` at build time.
+`docs/PROCESS.md` is the gate: ready/done checklists, the deploy verification
+protocol, branch protection, and non-functional requirements. Read it before
+shipping anything. Two things from it that bite immediately:
+
+- **Direct pushes to main are rejected.** Branch, PR, let CI run, merge.
+- **A deploy is not live until three consecutive fetches say so.** Prerendered
+  HTML carries a one year `s-maxage`, so edge nodes serve stale for minutes.
+
+## Hard-won constraints
+
+Each of these cost real time. Do not rediscover them.
+
+- **Workers forbids `eval`/`new Function`**, so MDX pages MUST be fully
+  prerendered. Keep `dynamicParams = false` on MDX routes and the static-assets
+  incremental cache in `open-next.config.ts`. A post rendering at request time
+  returns 500 on the real runtime while working fine under `next start`.
+- **Workers Builds auto-detects the wrong commands.** They must be
+  `npx opennextjs-cloudflare build` and `npx opennextjs-cloudflare deploy`. The
+  defaults produce a green Next build and a deploy that fails with "Could not
+  find compiled Open Next config".
+- **Prettier corrupts MDX**: its markdown parser rewrites `{/* */}` into invalid
+  `{/_ _/}`. `*.mdx` is in `.prettierignore`; keep it there.
+- **CI must build before typecheck**, because the build generates
+  `.content-collections/`, which the tsconfig alias resolves to. Typecheck first
+  fails on a fresh checkout while passing locally.
+- **Use `||` not `??` for env fallbacks.** `.env` templates ship variables as
+  empty strings, which are defined, so `??` passes `""` through. This sent
+  `from: ""` to Resend and produced a 502.
+- **Contrast values are load bearing**: `--muted-foreground: #666666` and light
+  `--accent: #047857`. Emerald-600 fails WCAG AA as text at 3.76:1.
+- **The mobile header has 73px for the wordmark** at 375px, but the full name
+  needs 133px. Hence the mono `mhshakouri` handle below `sm`, and Home hidden
+  there since the wordmark already links home.
+- **Secrets** go in via `wrangler secret put` (e.g. RESEND_API_KEY), never
+  committed vars. Local workerd preview reads `.env.local` at build time.
 
 ## Conventions
 
