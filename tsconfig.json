@@ -32,5 +32,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // workers/ has its own tsconfig: Workers runtime types, no DOM lib.
+  "exclude": ["node_modules", "workers"]
 }
