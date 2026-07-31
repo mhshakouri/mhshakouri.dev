@@ -76,6 +76,20 @@ Each of these cost real time. Do not rediscover them.
 - **Secrets** go in via `wrangler secret put` (e.g. RESEND_API_KEY), never
   committed vars. Local workerd preview reads `.env.local` at build time.
 
+## Related projects
+
+Side projects live in their own repositories, never here (see Conventions).
+Keep this list to one line each; it is a pointer, not a registry.
+
+- **arrowword** - cooperative Persian arrowword solver for two devices, from a
+  photo, no OCR. `github.com/mhshakouri/arrowword`, deploys to
+  `arrowword.mhshakouri.dev`, local path `../arrowword`. Its spec, conventions,
+  and collaboration protocol live in that repo.
+
+The durable registry is `/projects`, built from the `projects` content
+collection once M5 lands. When that exists, this section stays as the pointer
+for agents and the page becomes the public list.
+
 ## Conventions
 
 - Playground and side projects NEVER live in this repo. No `src/app/playground/`,
