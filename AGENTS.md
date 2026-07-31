@@ -90,6 +90,29 @@ The durable registry is `/projects`, built from the `projects` content
 collection once M5 lands. When that exists, this section stays as the pointer
 for agents and the page becomes the public list.
 
+## Starting a new side project
+
+When Hossein says "make this a playground project", "spin this out", or "make it
+a child project", this is the recipe. Arrowword is the reference implementation;
+copy its shape.
+
+1. Create `~/Projects/personal/<name>/`. Never a folder inside this repo.
+2. Scaffold `AGENTS.md` (including a parent pointer back to this repo),
+   `README.md`, `docs/SPEC.md`, `.gitignore`, `.github/workflows/ci.yml`, and a
+   Prettier config. Symlink `CLAUDE.md` to `AGENTS.md`.
+3. `git init` and commit. **Hossein creates the GitHub repo** under
+   `github.com/mhshakouri/<name>`; ask him for it rather than attempting it.
+4. CI exists before the project counts as started: typecheck plus whatever test
+   command it has. Then branch protection requiring the `checks` context.
+5. Deploy target is `<name>.mhshakouri.dev`, its own Cloudflare Worker,
+   independent of this site's deploys.
+6. Add one line to Related projects above.
+7. If it wants this site's look, **copy** tokens from `src/app/globals.css`.
+   Never import across repos, never add a shared package.
+
+Human steps, always his: creating the GitHub repo, DNS and subdomain setup, and
+any Cloudflare resources such as R2 buckets.
+
 ## Conventions
 
 - Playground and side projects NEVER live in this repo. No `src/app/playground/`,
