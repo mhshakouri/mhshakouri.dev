@@ -10,12 +10,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "arrowword:dev": "wrangler dev -c workers/arrowword/wrangler.jsonc --port 8787",
-    "arrowword:typecheck": "tsc -p workers/arrowword --noEmit",
-    "arrowword:deploy": "wrangler deploy -c workers/arrowword/wrangler.jsonc",
     "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "arrowword:test": "node workers/arrowword/test/acceptance.mjs"
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@content-collections/core": "^0.15.2",
@@ -27,7 +23,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260702.1",
     "@opennextjs/cloudflare": "^1.20.1",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.20",
