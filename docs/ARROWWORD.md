@@ -1,8 +1,8 @@
-# Arrowword Co-op: Aligned Spec (v3)
+# Arrowword Co-op: Aligned Spec (v4)
 
 A cooperative web app for solving Persian arrowword puzzles together, from a photo, on two devices, without any OCR.
 
-This document is the single source of truth for building the project as part of mhshakouri.dev. Decisions that changed from an earlier draft are marked "Changed:" so the history is visible. Decisions with real alternatives live in section 15 as records.
+This document is the single source of truth for building the project as part of mhshakouri.dev. Decisions that changed from an earlier draft are marked "Changed:" so the history is visible. Decisions with real alternatives live in section 17 as records.
 
 Author preference: do not use the em dash character anywhere in code, comments, content, or commit messages for this project. Use commas, colons, or periods instead.
 
@@ -213,7 +213,7 @@ Route: `/playground/arrowword/s/[id]`.
 
 ## 12. Milestones
 
-Each milestone is done when its automated command exits 0 **and** its human checks pass. Update the status line here in the same commit that completes the milestone.
+Each milestone must pass the ready and done gate in section 13. Update the status line here in the same commit that completes the milestone.
 
 ### A0 Worker skeleton, status: DONE 2026-07-31, not deployed
 
@@ -260,32 +260,111 @@ Persian keyboard hardening, loading and empty and error states, peer indicator, 
 
 Out of v1 (unchanged): OCR, auto grid detection, perspective correction, correctness checking, generation, roles and auth, per-player colors.
 
-## 13. Human checkpoints
+## 13. Definition of ready and done
 
-Work only Hossein can do, because it needs his accounts, his devices, or his eyes. Claude should stop and ask at each of these rather than working around them.
+The gate that runs on every milestone. Its purpose is to make the cross-cutting concerns in section 16 impossible to forget, because good intentions do not survive a long session. A0 shipped a bypassable upload limit precisely because no gate forced a security pass.
 
-**Before the first deploy (blocking A1's share-link testing):**
+### Ready, before starting a milestone
 
-1. `npx wrangler r2 bucket create arrowword-photos`
-2. Set `ALLOWED_ORIGINS` in `workers/arrowword/wrangler.jsonc` to `https://mhshakouri.dev,http://localhost:3000`
-3. `npm run arrowword:deploy`
-4. Confirm the deployed URL, which then becomes the client's base URL
+1. Every human checkpoint listed for this milestone in section 14 is done, and Hossein has confirmed it.
+2. Anything an earlier milestone left undeployed is deployed, not merely merged.
+3. No open question in section 18 blocks this milestone. If one does, resolve it first and record the decision.
+4. The milestone's automated check is named, even if it does not exist yet.
 
-**Per milestone:** the Human line in section 12.
+### Done, before calling a milestone finished
 
-**Standing:** Hossein reviews every diff. Claude proposes an approach before large multi-file changes and explains non-obvious decisions briefly.
+1. The automated command exits 0.
+2. Hossein has run the human checks and said they pass.
+3. **Security pass written down:** what can a stranger holding the session link do to anything added in this milestone? See section 16.
+4. Every new failure mode has a user-facing state, not only an API status code.
+5. The status marker in section 12 is updated, in the same commit as the work.
+6. Anything learned the hard way is written into this spec, in the same commit.
+7. The repo check suite passes: `lint`, `typecheck`, `arrowword:typecheck`, `build`, `format:check`.
 
-## 14. Working model
+A milestone that satisfies 1 and 2 but not 3 through 7 is not done. It is a demo.
 
-Changed 2026-07-31: this project is now built agentically, with supervision, rather than hands-on with Claude reviewing.
+## 14. Human checkpoints and how they are handed over
 
-- Claude implements against this spec, milestone by milestone, and does not start the next milestone before the current one's automated and human checks pass.
+Work only Hossein can do, because it needs his accounts, his devices, or his eyes.
+
+### Handoff format
+
+When Claude is blocked on off-development work, it gives these five things, in this order, and then stops:
+
+1. What is blocked, and what completing this unblocks.
+2. The exact command or exact dashboard path, copy-pasteable.
+3. What success looks like: the expected output or screen state.
+4. How to verify it independently.
+5. What to paste back, if anything.
+
+Never "you will need to set up R2 first". Always the five above.
+
+### Blocking now: first deploy (needed before A1 share-link testing)
+
+1. **Blocked:** the client has no real base URL, so share links cannot be tested on a second device.
+2. **Run:**
+   ```bash
+   npx wrangler r2 bucket create arrowword-photos
+   ```
+   then set `ALLOWED_ORIGINS` in `workers/arrowword/wrangler.jsonc` to `https://mhshakouri.dev,http://localhost:3000`, then:
+   ```bash
+   npm run arrowword:deploy
+   ```
+3. **Success:** `Created bucket arrowword-photos`, then a deploy that prints a `*.workers.dev` URL.
+4. **Verify:** `npx wrangler r2 bucket list` shows the bucket, and `curl -X POST <url>/session` returns a 32 character hex id.
+5. **Paste back:** the deployed worker URL.
+
+### Per milestone
+
+The Human line in section 12.
+
+### Standing
+
+Hossein reviews every diff. Claude proposes an approach before large multi-file changes and explains non-obvious decisions briefly.
+
+## 15. Working model
+
+Changed 2026-07-31: this project is built agentically, with supervision, rather than hands-on with Claude reviewing.
+
+- Claude implements against this spec, milestone by milestone, and does not start the next milestone before the gate in section 13 passes.
 - Every milestone ships with its automated check wired into a named npm script. A milestone with no runnable check is not done.
-- Hossein supervises: reviews every diff, performs the human checkpoints in section 13, and owns design and taste calls.
-- When the spec is silent, Claude asks rather than inventing, or invents and immediately records the choice here. Silence is what produced the undocumented status codes and limits that v3 fixes.
+- Hossein supervises: reviews every diff, performs the human checkpoints, and owns design and taste calls.
 - Anything learned the hard way goes into the spec in the same commit. The 146-second stall in section 7 is the model for this.
 
-## 15. Decision records
+### Stop and ask
+
+Claude stops and asks rather than proceeding or working around, when the work involves:
+
+1. Spending money, or touching Hossein's accounts: buckets, deploys, DNS, secrets, dashboards.
+2. Anything destructive or hard to reverse: deleting data, dropping or renaming a Durable Object class, force pushing.
+3. A new external dependency or vendor.
+4. Changing an invariant in section 4, or a decision in section 17.
+5. Accepting a known security hole in order to ship faster.
+6. A silence in this spec where the choice would be expensive to reverse later.
+
+### Decide and record, do not ask
+
+Naming, file layout, formatting, test structure, error message wording, and anything cheap to change. Record the choice in the spec if a future session would otherwise have to guess. Asking about these wastes supervision on things that do not need it.
+
+## 16. Non-functional requirements
+
+Checked at every Done gate, not once at the end.
+
+**Security.** The threat model is one sentence: the link is the only credential, so assume a link can leak. Every endpoint must have an answer to "what can a stranger with this link do?". Requirements: the server validates all input and never trusts the client; uploads verify content type and enforce size on the stream, never on a client-supplied header; anything a link holder can call in a loop is rate limited; no secrets reach the client bundle.
+
+**Logging and observability.** The worker runs with observability enabled. **Session ids must never be logged in full**, because the id is the credential; log a short hash prefix instead. Log enough to answer "why did this session fail" without logging puzzle content or letters.
+
+**Data and privacy.** Photos are personal content and may show more than the puzzle. They are private to the link, there is no listing endpoint, and no session is ever enumerable. Retention in v1 is indefinite, which is a deliberate accepted cost; a delete endpoint is required before any link is shared outside the household.
+
+**Schema versioning.** `SessionDoc.v` exists so shape changes do not break live sessions. Any change to the shape bumps `v`, and the Durable Object migrates on read. Never assume a stored document matches the current type.
+
+**Rollback.** Site: revert the commit and push. Worker: `npx wrangler rollback`. Durable Object migrations are not symmetric: adding a class is safe, renaming or deleting one is not, and needs a new migration tag plus a plan for the objects that already exist.
+
+**Accessibility.** Grid cells are interactive controls: keyboard reachable, visible focus, and state announced to assistive tech. The clue zoom overlay traps focus and closes on Escape. Colors come from the site tokens, which already meet WCAG AA.
+
+**Performance budget.** Downscaled photo under 600 KB. Play page interactive within 3 seconds on a mid-range phone over 4G. WebSocket reconnect within 5 seconds of a drop.
+
+## 17. Decision records
 
 Decisions with real alternatives, kept so they are not relitigated in a later session.
 
@@ -299,7 +378,7 @@ Decisions with real alternatives, kept so they are not relitigated in a later se
 
 **ADR-5: Direction is not a v1 concern.** The app has no concept of words, so RTL affects nothing until auto-advance exists. Alternative was building direction awareness into rendering from the start. Consequence: zero direction code in v1, and direction enters only with run detection in v2.
 
-## 16. Open questions (non-blocking)
+## 18. Open questions (non-blocking)
 
 - Crop and cache clue images versus transform on the fly: start with transform, revisit only if zoom feels slow on phones.
 - Who filled what, with color coding: timestamps and a per-device id would suffice; decide after real use.
