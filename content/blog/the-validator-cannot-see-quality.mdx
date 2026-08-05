@@ -1,0 +1,121 @@
+---
+title: "The validator cannot tell you the answer is good"
+description: "Choosing a model to generate Persian crossword clues, where every automated check passed on the model that called a leopard a bird."
+date: "2026-08-05"
+tags: ["ai", "testing", "persian"]
+image: "/blog/the-validator-cannot-see-quality.png"
+draft: true
+---
+
+I was picking a model to generate Persian crossword puzzles. The theme was
+«پرندگان», birds. The small model came back with a paw, offered as a falcon, and
+a leopard, described in its clue as a bird.
+
+It scored eight out of eight on every check I had.
+
+## What the checks were
+
+Generated puzzles have to survive a validator before anything is stored, and for
+Persian the validator has real work to do. The same word has several spellings,
+so every comparison is a letter comparison against a normalized form. The checks
+were the obvious ones, and they were all correct:
+
+- the answer is in Persian script
+- it fits the number of squares
+- it is one word
+- it contains no Arabic letters that a Persian keyboard would not produce
+- no zero-width non-joiner in a place that would break the grid
+
+A paw passes all of those. So does a leopard. The validator was not broken. It
+was doing exactly what it was written to do, which is to check that an answer is
+**well formed**, and that is a different question from whether the answer is
+**right**.
+
+The part worth internalizing: a wrong word that crosses correctly is invisible to
+every automated check this project has, and there is no cheap way to change that.
+
+## The comparison, measured rather than argued
+
+Same prompt, one call, same theme. I ran it against the model in production and
+against a larger one.
+
+The 8B gave me مرغابی, duck, four times over, glossed in turn as duck, goose,
+swan and pigeon. پنجه, paw, presented as a falcon. شکاری, which is an adjective
+meaning "hunting", presented as a sparrow. Earlier runs had offered a squirrel, a
+jackal, a leopard and a fly, each with a clue confidently explaining why it was a
+bird. **8.2 neurons.**
+
+The 70B gave me بلبل، کبک، عقاب، شاهین، طاووس، گنجشک، حمام. Nightingale,
+partridge, eagle, falcon, peacock, sparrow, dove. Real, distinct, with clues that
+describe them. **42.2 neurons**, and about twice as fast in wall clock time.
+
+Roughly five times the cost per call, because output tokens dominate the pricing
+and the bigger model's output rate is where the money goes. Which also means a
+longer prompt is close to free, and that changes how you write prompts.
+
+## What the prompt fixed, and what it could not
+
+I compared three prompt variants before concluding the model mattered more.
+
+**Instructions in English beat the same instructions in Persian, decisively.** The
+all-Persian prompt produced repeated JSON keys, duplicate answers, and one call
+that took 45 seconds. This surprised me and I have no elegant explanation for it.
+
+**A worked example with real words got the example words copied into the answers.**
+I asked for birds, showed «کتاب», book, as a formatting example, and «کتاب» came
+back inside a puzzle about birds. Placeholders instead of real words fixed it.
+
+**Asking for a throwaway English gloss beside each Persian word measurably
+improved theme adherence** on both models, and is the single most useful line in
+the prompt. The gloss is never shown to anyone. It exists because a model that
+has to name the thing in a second language appears to commit to what the thing
+actually is.
+
+None of it made the small model's vocabulary reliable. Prompting moved the
+failure rate. It did not move the ceiling.
+
+## One more thing the normalizer taught me
+
+Folding is how you compare Persian words: `شکاري` with an Arabic yeh becomes
+`شکاری`, and now two spellings of one word match. Correct, necessary, and it has
+a consequence I did not see coming.
+
+`آبگوشت` folds to `ابگوشت`. If the folded form is what gets stored and drawn into
+the grid, a Persian solver is shown a misspelling of a dish they have eaten their
+whole life.
+
+Folding is right for comparison and wrong for display, and my module did not
+separate the two. Whether آ and ا should even share a square is a convention
+question about crosswords, not a programming one, and it needed a native speaker
+rather than a decision from me.
+
+## What I changed
+
+I stopped treating a green validator as a signal about quality, because it never
+was one. Three things came out of it.
+
+**I moved the model choice into configuration and made switching a deploy rather
+than a pull request**, so a comparison costs nothing and can be redone when the
+vendor's lineup changes.
+
+**I wrote the measurement script the project had been owing itself**, which puts
+prompts in front of the real model and reports neurons per call. Cost per
+generated puzzle stopped being a guess.
+
+**I kept exactly one human check on the thing machines cannot see**, which is
+whether the puzzle is any good. Nothing automated is going to tell me that, so
+pretending otherwise just moves the discovery later.
+
+## Where this lands
+
+Persian is not the point. Persian is the reason I noticed, because the failure
+mode stopped being a slightly odd clue and became a leopard.
+
+Every LLM feature I have shipped has this shape underneath it. There is a layer
+that checks structure, and it is genuinely valuable, and it will pass output that
+is confidently, fluently wrong. If your only gate is a schema and a set of
+assertions, you have built something that tells you the shape is right and
+nothing at all about whether the content is.
+
+That is not an argument for more assertions. It is an argument for knowing which
+question your tests are answering.

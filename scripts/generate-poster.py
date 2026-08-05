@@ -283,11 +283,68 @@ def draw_spec_driven_development_with_ai(c: Ctx):
            anchor="mm")
 
 
+
+# ---------------------------------------------------------------- fig. 03
+
+def draw_the_validator_cannot_see_quality(c: Ctx):
+    """A scorecard where everything passed. No warning colour anywhere, because
+    that absence is the whole point: nothing flagged the wrong answer."""
+    c.text((1200, 660), "8/8", c.font("Outfit-Regular", 520), GHOST, anchor="mm")
+
+    LEFT = 300
+    c.text((LEFT, 300), "checks", c.mono(34), FG)
+    c.text((LEFT, 344), "every one a machine can run", c.mono(26), MUTED)
+
+    checks = [
+        "persian script",
+        "fits the squares",
+        "one word",
+        "no arabic letters",
+        "no zero-width joiner",
+    ]
+    y = 440
+    for label in checks:
+        kx = LEFT
+        c.line((kx, y + 2), (kx + 9, y + 12), fill=ACCENT, width=3)
+        c.line((kx + 9, y + 12), (kx + 26, y - 12), fill=ACCENT, width=3)
+        c.text((LEFT + 54, y), label, c.mono(32), FG, anchor="lm")
+        y += 78
+
+    c.line((LEFT, 860), (LEFT + 620, 860), fill=LINE, width=1)
+    c.text((LEFT, 906), "8 of 8, passed", c.mono(30), MUTED, anchor="lm")
+
+    RIGHT = 1360
+    c.text((RIGHT, 300), "the answer it passed", c.mono(34), FG)
+    c.text((RIGHT, 344), "theme: birds", c.mono(26), MUTED)
+
+    rows = [("paw", "offered as a falcon"), ("leopard", "described as a bird")]
+    # Connector starts past the widest word, so both rows align and neither touches.
+    widest = max(c.d.textlength(w, font=c.monob(48)) for w, _ in rows) / S
+    dash = RIGHT + widest + 40
+    y = 460
+    for word, gloss in rows:
+        c.text((RIGHT, y), word, c.monob(48), FG, anchor="lm")
+        c.line((dash, y), (dash + 60, y), fill=LINE, width=2)
+        c.text((dash + 90, y), gloss, c.mono(32), MUTED, anchor="lm")
+        y += 130
+
+    c.text((RIGHT, 906), "nothing flagged either one", c.mono(30), MUTED, anchor="lm")
+
+    c.text((1200, 1050), "well formed is not the same as right", c.mono(34), MUTED,
+           anchor="mm")
+
+
 POSTERS = {
     "building-this-site": ("00", "building this site", draw_building_this_site,
                            ["8a92621", "6440915", "d2602ee", "3882e00", "8f0dbbd"]),
     "push-to-publish": ("01", "push to publish", draw_push_to_publish,
                         ["6a5d55d", "a3b1c10", "bb5cb26", "a9af5dd", "5176684"]),
+    "the-validator-cannot-see-quality": (
+        "03",
+        "the validator cannot see quality",
+        draw_the_validator_cannot_see_quality,
+        ["8dc0597", "f705222", "a0d068e", "632ec02", "8a3b6c3"],
+    ),
     "spec-driven-development-with-ai": ("02", "spec-driven development",
                                         draw_spec_driven_development_with_ai,
                                         ["a925311", "4c75d3f", "5176684",
@@ -298,6 +355,10 @@ POSTERS = {
 # Title and hook for the 4:5 social variant. Keep title lines under ~34 chars
 # so they fit at 84pt; the hook is one line of context for people who scroll past.
 SOCIAL = {
+    "the-validator-cannot-see-quality": (
+        ["The validator cannot", "tell you the answer", "is good"],
+        "it scored 8 of 8 while calling a leopard a bird.",
+    ),
     "spec-driven-development-with-ai": (
         ["Spec-driven", "development with AI:", "what actually broke"],
         "the model built my wrong design perfectly. twice.",
