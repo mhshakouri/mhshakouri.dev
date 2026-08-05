@@ -13,6 +13,13 @@ a leopard, described in its clue as a bird.
 
 It scored eight out of eight on every check I had.
 
+The app is [Arrowword Co-op](/projects/arrowword): several people solve a Persian
+crossword together, in real time, on separate devices. One of the three ways to
+start is to type a theme and have a puzzle generated for it. It is
+[live and public](https://arrowword.mhshakouri.dev), the
+[source is on GitHub](https://github.com/mhshakouri/arrowword), and everything
+below is in its spec, including the bits that are embarrassing.
+
 ## What the checks were
 
 Generated puzzles have to survive a validator before anything is stored, and for
@@ -119,3 +126,15 @@ nothing at all about whether the content is.
 
 That is not an argument for more assertions. It is an argument for knowing which
 question your tests are answering.
+
+## Go and break it
+
+The generator is running at
+[arrowword.mhshakouri.dev](https://arrowword.mhshakouri.dev). Type a theme, in
+Persian or English, and watch it work. The app shows you the model's raw reply on
+its own pages, so when it produces something silly you can see exactly what it
+said, which is the same view I used to make the comparison above.
+
+If you get a leopard, that is the post. The write-up of the whole project,
+including what was deliberately not built, is at
+[Arrowword Co-op](/projects/arrowword).

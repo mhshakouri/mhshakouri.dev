@@ -316,6 +316,8 @@ def draw_the_validator_cannot_see_quality(c: Ctx):
     RIGHT = 1360
     c.text((RIGHT, 300), "the answer it passed", c.mono(34), FG)
     c.text((RIGHT, 344), "theme: birds", c.mono(26), MUTED)
+    # Name the app, because this image travels on its own.
+    c.text((RIGHT, 384), "arrowword.mhshakouri.dev", c.mono(26), FAINT)
 
     rows = [("paw", "offered as a falcon"), ("leopard", "described as a bird")]
     # Connector starts past the widest word, so both rows align and neither touches.
