@@ -8,8 +8,8 @@ Hossein is a senior frontend/software engineer building his personal site at **m
 2. Set the project up so the workflow is **hybrid**: AI-driven when he wants speed, hands-on when he wants to write code himself - and always understandable and steerable.
 
 **Status, 2026-07-31: live in production.** M0 to M3, M6 and M7 are complete.
-M4 (case studies) and M5 (projects index) are deferred post-launch, and `/uses`
-is still a stub, hidden from nav. Process gates live in `docs/PROCESS.md`.
+M5 (projects index) shipped 2026-08-05 with arrowword as its first entry. M4
+(case studies) is still deferred, and `/uses` is a stub hidden from nav. Process gates live in `docs/PROCESS.md`.
 
 ## Decisions (from Q&A)
 

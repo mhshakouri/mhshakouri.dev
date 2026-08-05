@@ -1,0 +1,94 @@
+---
+title: "Arrowword Co-op"
+description: "Several people solve a Persian crossword together in real time, from a photo or from an AI-generated puzzle, with push-to-talk voice. No accounts, no OCR."
+date: "2026-08-05"
+tech:
+  [
+    "TypeScript",
+    "Cloudflare Workers",
+    "Durable Objects",
+    "R2",
+    "Workers AI",
+    "Preact",
+    "Vite",
+    "WebSockets",
+    "AudioWorklet",
+  ]
+repo: "https://github.com/mhshakouri/arrowword"
+live: "https://arrowword.mhshakouri.dev"
+featured: true
+---
+
+Open it, click the demo, send the link to someone. That is the whole onboarding,
+because there are no accounts.
+
+Three ways to start a puzzle: clone the demo, photograph a printed arrowword and
+mark the grid by hand, or generate one from a theme in Persian or English. Then
+letters sync live between everyone in the session, letters typed offline are
+kept and sent when the connection returns, and players can hold a button to talk
+to each other.
+
+12,886 lines of TypeScript, 368 automated checks, 18 server-enforced invariants,
+17 decision records. Built AI-first against a written spec, which is the point
+as much as the app is.
+
+## Every significant choice was forced by a constraint
+
+**No OCR.** Humans read the clues from the photo; the app only needs to know
+where the cells are. That deleted the hardest and least reliable part of the
+problem before any code existed.
+
+**No accounts.** The session URL is the credential. That deleted an entire auth
+system, and made self-expiry the answer to data lifecycle: each session sets a
+Durable Object alarm and removes itself after 30 days of inactivity, with an R2
+lifecycle rule as a backstop.
+
+**One Durable Object per session.** It is single threaded, so writes serialize
+naturally and conflict handling costs nothing. A second Durable Object does rate
+limiting, because this is a public app that anyone can call.
+
+**The client packs, the server validates.** Cloudflare's free tier allows 10ms
+of CPU per request. Model calls are I/O and do not count against it, but a
+backtracking crossword packer is pure CPU and would never fit. Moving it into
+the browser removes the constraint instead of working around it, and the trust
+boundary stays exactly where it was: whatever the client produces is untrusted
+input, checked before anything is stored.
+
+**Voice rides the puzzle's own WebSocket.** Not a technical preference. On the
+network this feature exists for, mainstream calling apps are unreachable, so the
+transport that already carries the letters is the only one that works. Clips are
+captured with an AudioWorklet, downsampled to 16 kHz mono and sent as WAV rather
+than through MediaRecorder, because Safari records a container Chrome cannot
+play. The server relays and drops; nothing is stored.
+
+## Two things that went wrong, and what they taught
+
+**A validator can tell you output is well formed. It cannot tell you it is any
+good.** While choosing a model for Persian generation, the small one passed
+every mechanical check: correct script, right length, single word, no Arabic
+letters. Eight out of eight, while offering a paw as a bird and confidently
+describing a leopard as one. A wrong word that crosses correctly is invisible to
+every automated check the project has. Persian only made it obvious.
+
+**Green tests, a clean review, and a completely broken feature.** Workers AI
+returns its reply as a parsed object under JSON Mode and as a string without it.
+Every provider test returned a string, so 256 checks passed while the live app
+could not generate a single puzzle. The fix was reading the vendor's own example
+instead of inferring from the one mode that happened to be tested. The durable
+output is a script that runs one real generation against the real model, and a
+standing rule to run it before anything on that path merges.
+
+## What was deliberately not built
+
+Live WebRTC voice was designed in full, then declined rather than postponed,
+with a decision record explaining why: the network the feature exists for cannot
+use it, and nothing else needs it. Auto-advance between cells stays out too. The
+spec keeps both records so that reopening either starts from the reasoning
+rather than from scratch.
+
+## The check that mattered
+
+Every test of the voice feature ran on networks that work. The one that decided
+whether it was finished was a clip recorded on a phone in Iran, arriving
+audibly. One accepted gap remains, recorded rather than hidden: iOS Safari is
+untested, because no such phone was reachable.

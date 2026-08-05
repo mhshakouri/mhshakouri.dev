@@ -86,9 +86,9 @@ Keep this list to one line each; it is a pointer, not a registry.
   `arrowword.mhshakouri.dev`, local path `../arrowword`. Its spec, conventions,
   and collaboration protocol live in that repo.
 
-The durable registry is `/projects`, built from the `projects` content
-collection once M5 lands. When that exists, this section stays as the pointer
-for agents and the page becomes the public list.
+The public list is `/projects`, built from the `projects` content collection
+(M5, shipped 2026-08-05). Adding a project is one MDX file in
+`content/projects/` plus one line here.
 
 ## Starting a new side project
 
